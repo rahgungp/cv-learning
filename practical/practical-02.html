@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Praktikum 02 – Image Processing dengan OpenCV | COM</title>
+  <link rel="icon" type="image/png" href="../assets/img/logo-TKOM.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css"/>
+</head>
+<body>
+<header class="site-header">
+  <button class="sidebar-toggle" id="sidebar-toggle">&#9776;</button>
+  <a href="../index.html" class="header-brand">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo" class="header-logo" onerror="this.style.display=\'none\'"/>
+    <span class="header-title">COM</span><span class="header-sub">Computer Vision</span>
+  </a>
+  <div class="header-search"><input type="search" id="search-input" placeholder="Cari materi..." autocomplete="off"/><div id="search-results" class="search-dropdown" hidden></div></div>
+  <nav class="header-actions"><button id="theme-toggle" class="btn-icon">&#127769;</button></nav>
+</header>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo" class="sidebar-logo" onerror="this.style.display=\'none\'"/>
+    <div class="sidebar-brand-text"><strong>COM</strong><small>Computer Vision</small></div>
+  </div>
+  <nav id="sidebar-nav" class="sidebar-nav"></nav>
+  <div class="sidebar-footer"><a href="../about.html">Tentang</a> &middot; <a href="../references.html">Referensi</a></div>
+</aside>
+<main class="main-content" id="main-content">
+  <nav class="breadcrumb">
+    <a href="../index.html">&#127968; Beranda</a><span class="breadcrumb-sep">&rsaquo;</span>
+    <a href="../materials/material-02.html">Materi 02</a><span class="breadcrumb-sep">&rsaquo;</span>
+    <span>Praktikum 02</span>
+  </nav>
+  <div class="article-header">
+    <div class="article-header__meta">
+      <span class="badge badge-purple">&#128187; Praktikum</span>
+      <span class="badge badge-blue">Sesi 02</span>
+      <span class="badge" data-progress-week="week02">0%</span>
+    </div>
+    <h1 class="article-title">Praktikum 02: Image Processing dengan OpenCV</h1>
+    <p class="article-desc">Color space conversion, histogram equalization, dan augmentasi data menggunakan OpenCV dan torchvision.</p>
+    <div class="article-actions">
+      <a href="https://colab.research.google.com" target="_blank" rel="noopener" class="btn-primary">
+        &#9654; Buka di Google Colab
+      </a>
+      <button class="btn-outline" onclick="markPracticeComplete(\'week02\')">&#9989; Tandai Selesai</button>
+    </div>
+  </div>
+  <section class="content-section">
+    <h2>Step 1: Konversi Color Space</h2>
+    <div class="code-block">
+      <div class="code-block__header"><span class="code-lang">Python</span><button class="copy-btn">Copy</button></div>
+      <pre><code class="language-python">import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+img_bgr = cv2.imread("sample.jpg")
+
+# Konversi ke berbagai color space
+img_rgb  = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+img_hsv  = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
+img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+img_lab  = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2LAB)
+
+# Tampilkan semua
+fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+axes[0,0].imshow(img_rgb);                       axes[0,0].set_title("RGB")
+axes[0,1].imshow(img_hsv[:,:,0], cmap="hsv");    axes[0,1].set_title("HSV - Hue channel")
+axes[1,0].imshow(img_gray, cmap="gray");          axes[1,0].set_title("Grayscale")
+axes[1,1].imshow(img_lab[:,:,0], cmap="gray");    axes[1,1].set_title("LAB - L channel")
+for ax in axes.flat: ax.axis("off")
+plt.tight_layout(); plt.show()</code></pre>
+    </div>
+  </section>
+  <section class="content-section">
+    <h2>Step 2: Histogram & Equalization</h2>
+    <div class="code-block">
+      <div class="code-block__header"><span class="code-lang">Python</span><button class="copy-btn">Copy</button></div>
+      <pre><code class="language-python">import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+
+img_bgr  = cv2.imread("sample.jpg")
+img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+
+# Histogram sebelum equalization
+hist_before = cv2.calcHist([img_gray], [0], None, [256], [0, 256])
+
+# Histogram Equalization
+img_eq = cv2.equalizeHist(img_gray)
+hist_after = cv2.calcHist([img_eq], [0], None, [256], [0, 256])
+
+# CLAHE — lebih halus dari equalizeHist
+clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+img_clahe = clahe.apply(img_gray)
+
+fig, axes = plt.subplots(2, 3, figsize=(15, 8))
+for img, title, ax in zip(
+    [img_gray, img_eq, img_clahe,
+     hist_before, hist_after, None],
+    ["Original Gray", "Equalized", "CLAHE", "Hist Before", "Hist After", ""],
+    axes.flat
+):
+    if img is not None:
+        if len(img.shape) == 1 or (len(img.shape)==2 and img.shape[1]<10):
+            ax.plot(img, color="navy"); ax.set_title(title)
+        else:
+            ax.imshow(img, cmap="gray"); ax.set_title(title); ax.axis("off")
+plt.tight_layout(); plt.show()</code></pre>
+    </div>
+  </section>
+  <section class="content-section">
+    <h2>Step 3: Data Augmentation</h2>
+    <div class="code-block">
+      <div class="code-block__header"><span class="code-lang">Python</span><button class="copy-btn">Copy</button></div>
+      <pre><code class="language-python">from torchvision import transforms
+from PIL import Image
+import matplotlib.pyplot as plt
+import numpy as np
+
+img = Image.open("sample.jpg")
+
+# Definisikan augmentasi
+augmentations = [
+    ("Original",            transforms.Compose([transforms.Resize((224,224))])),
+    ("Horizontal Flip",     transforms.Compose([transforms.Resize((224,224)), transforms.RandomHorizontalFlip(p=1.0)])),
+    ("Rotation 30°",        transforms.Compose([transforms.Resize((224,224)), transforms.RandomRotation(30)])),
+    ("Color Jitter",        transforms.Compose([transforms.Resize((224,224)), transforms.ColorJitter(0.5, 0.5, 0.5, 0.1)])),
+    ("Random Crop",         transforms.Compose([transforms.RandomResizedCrop(224, scale=(0.6,1.0))])),
+    ("Grayscale",           transforms.Compose([transforms.Resize((224,224)), transforms.Grayscale(num_output_channels=3)])),
+]
+
+fig, axes = plt.subplots(2, 3, figsize=(12, 8))
+for ax, (title, transform) in zip(axes.flat, augmentations):
+    out = transform(img)
+    ax.imshow(np.array(out))
+    ax.set_title(title)
+    ax.axis("off")
+plt.tight_layout(); plt.show()
+print("✅ Augmentasi berhasil!")</code></pre>
+    </div>
+  </section>
+
+  <div class="material-nav">
+    <a href="../materials/material-02.html" class="btn-outline">&larr; Kembali ke Materi 02</a>
+    <button class="btn-primary" onclick="markPracticeComplete(\'week02\')">&#9989; Tandai Praktikum Selesai</button>
+    <a href="practical-03.html" class="btn-outline">Praktikum 03 &rarr;</a>
+  </div>
+</main>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="../assets/img/logo-TKOM.png" alt="Logo" class="footer-logo" onerror="this.style.display=\'none\'"/>
+      <div><strong>COM &ndash; Computer Vision Learning Platform</strong><small>Universitas Warmadewa</small></div>
+    </div>
+    <nav class="footer-links"><a href="../index.html">Beranda</a><a href="../about.html">Tentang</a></nav>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="../assets/js/course-config.js"></script>
+<script src="../assets/js/progress.js"></script>
+<script src="../assets/js/main.js"></script>
+<script>
+function markPracticeComplete(week) {
+  if (typeof Progress !== \'undefined\') {
+    Progress.mark(week, \'practice\');
+    document.querySelectorAll(\'button[onclick*="markPracticeComplete"]\').forEach(b => {
+      b.textContent = \'\u2705 Selesai!\'; b.disabled = true;
+    });
+  }
+}
+document.addEventListener(\'DOMContentLoaded\', () => {
+  if (typeof buildSidebar === \'function\') buildSidebar(\'week02\');
+  if (typeof initSearch === \'function\') initSearch();
+  if (typeof initMobileSidebar === \'function\') initMobileSidebar();
+  if (typeof Theme !== \'undefined\') Theme.apply();
+  if (typeof initCopyButtons === \'function\') initCopyButtons();
+  document.getElementById(\'theme-toggle\')?.addEventListener(\'click\', () => Theme?.toggle());
+});
+</script>
+</body>
+</html>

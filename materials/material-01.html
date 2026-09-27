@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Materi 01 – Introduction to Computer Vision: konsep dasar, pipeline, dan aplikasi nyata"/>
+  <title>Materi 01 – Introduction to Computer Vision | COM</title>
+  <link rel="icon" type="image/png" href="../assets/img/logo-TKOM.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css"/>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle Sidebar">☰</button>
+  <a href="../index.html" class="header-brand">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo TKOM" class="header-logo" onerror="this.style.display='none'"/>
+    <span class="header-title">COM</span>
+    <span class="header-sub">Computer Vision</span>
+  </a>
+  <div class="header-search">
+    <input type="search" id="search-input" placeholder="Cari materi…" autocomplete="off"/>
+    <div id="search-results" class="search-dropdown" hidden></div>
+  </div>
+  <nav class="header-actions">
+    <button id="theme-toggle" class="btn-icon" aria-label="Toggle dark mode" title="Ganti tema">🌙</button>
+    <button id="pres-trigger" class="btn-primary btn-sm">▶ Presentation Mode</button>
+  </nav>
+</header>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'"/>
+    <div class="sidebar-brand-text"><strong>COM</strong><small>Computer Vision</small></div>
+  </div>
+  <nav id="sidebar-nav" class="sidebar-nav"></nav>
+  <div class="sidebar-footer">
+    <a href="../about.html">Tentang</a> <span>·</span> <a href="../references.html">Referensi</a>
+  </div>
+</aside>
+
+<!-- PRESENTATION OVERLAY -->
+<div id="pres-overlay" class="pres-overlay" hidden role="dialog" aria-modal="true">
+  <div class="pres-progress-bar"><div class="pres-progress-fill" id="pres-prog"></div></div>
+  <div class="pres-slide" id="pres-slide"></div>
+  <div class="pres-controls">
+    <button id="pres-prev" class="pres-btn">‹</button>
+    <div class="pres-dots" id="pres-dots"></div>
+    <button id="pres-next" class="pres-btn">›</button>
+  </div>
+  <button id="pres-close" class="pres-close">✕</button>
+  <div class="pres-counter" id="pres-counter">1 / 1</div>
+  <div class="pres-hint">← → Navigate &nbsp;|&nbsp; Space Next &nbsp;|&nbsp; Esc Exit</div>
+</div>
+
+<!-- MAIN -->
+<main class="main-content" id="main-content">
+
+  <!-- BREADCRUMB -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="../index.html">🏠 Beranda</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Materi 01</span>
+  </nav>
+
+  <!-- ARTICLE HEADER -->
+  <div class="article-header">
+    <div class="article-header__meta">
+      <span class="badge badge-green">👁️ Fundamentals</span>
+      <span class="badge badge-blue">Materi 01 dari 16</span>
+      <span class="badge" id="progress-badge-week01" data-progress-week="week01">0%</span>
+    </div>
+    <h1 class="article-title">Introduction to Computer Vision</h1>
+    <p class="article-desc">Memahami konsep dasar Computer Vision, cara komputer "melihat" dunia, dan pipeline lengkap dari piksel hingga prediksi.</p>
+    <div class="article-actions">
+      <button id="mark-theory-btn" class="btn-primary" onclick="markTheoryRead('week01')">
+        ✅ Tandai Sudah Dibaca
+      </button>
+      <a href="../practical/practical-01.html" class="btn-outline">💻 Ke Praktikum →</a>
+      <button id="pres-trigger2" class="btn-outline btn-green">▶ Presentation Mode</button>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs" role="tablist">
+    <button class="tab tab--active" role="tab" data-tab="theory" aria-selected="true">📖 Teori</button>
+    <button class="tab" role="tab" data-tab="quiz" aria-selected="false">🧠 Kuis</button>
+  </div>
+
+  <!-- TAB: THEORY -->
+  <div class="tab-panel tab-panel--active" id="panel-theory">
+
+    <!-- 1. Apa itu Computer Vision -->
+    <section class="content-section">
+      <h2>1. Apa itu Computer Vision?</h2>
+      <p>
+        <strong>Computer Vision (CV)</strong> adalah sub-bidang kecerdasan buatan (AI) yang memungkinkan komputer
+        untuk <em>menginterpretasikan dan memahami konten visual</em> dari dunia nyata — seperti gambar dan video —
+        layaknya cara manusia melihat dan memproses informasi visual.
+      </p>
+      <div class="info-box info-box--blue">
+        <strong>💡 Definisi Singkat</strong><br/>
+        Computer Vision = AI yang memberi kemampuan <em>melihat</em> pada mesin,
+        mengubah piksel menjadi pemahaman bermakna.
+      </div>
+
+      <h3>Perbedaan CV dengan Image Processing</h3>
+      <div class="compare-table">
+        <table>
+          <thead>
+            <tr><th>Aspek</th><th>Image Processing</th><th>Computer Vision</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Tujuan</td><td>Mengolah/memanipulasi gambar</td><td>Memahami isi gambar</td></tr>
+            <tr><td>Output</td><td>Gambar yang sudah diproses</td><td>Label, koordinat, teks, keputusan</td></tr>
+            <tr><td>Contoh</td><td>Blur, sharpen, resize, rotate</td><td>Deteksi wajah, klasifikasi objek</td></tr>
+            <tr><td>Pendekatan</td><td>Matematika sinyal</td><td>Machine learning / deep learning</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 2. Pipeline CV -->
+    <section class="content-section">
+      <h2>2. Computer Vision Pipeline</h2>
+      <p>Setiap sistem CV melewati tahapan berikut, dari data mentah hingga keputusan akhir:</p>
+
+      <div class="illustration-wrap">
+        <img src="../assets/illustrations/computer-vision-pipeline.svg"
+             alt="Computer Vision Pipeline" class="illustration"/>
+      </div>
+
+      <div class="pipeline-steps">
+        <div class="pipeline-step">
+          <div class="ps-num">1</div>
+          <div class="ps-body">
+            <strong>Input (Kamera/File)</strong>
+            <p>Sumber data visual — kamera real-time, file gambar (JPEG/PNG), atau frame video.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="ps-num">2</div>
+          <div class="ps-body">
+            <strong>Raw Image</strong>
+            <p>Gambar mentah berupa array angka 0–255 per piksel, belum dinormalisasi.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="ps-num">3</div>
+          <div class="ps-body">
+            <strong>Preprocessing</strong>
+            <p>Resize, normalisasi, augmentasi, konversi warna — menyiapkan data untuk model.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="ps-num">4</div>
+          <div class="ps-body">
+            <strong>Feature Extraction</strong>
+            <p>Model mengekstrak fitur penting — tepi, tekstur, bentuk, pola — dari gambar.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="ps-num">5</div>
+          <div class="ps-body">
+            <strong>Model (CNN/ViT)</strong>
+            <p>Jaringan saraf tiruan memproses fitur dan belajar membuat prediksi.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="ps-num">6</div>
+          <div class="ps-body">
+            <strong>Prediction / Output</strong>
+            <p>Hasil akhir: label kelas, kotak bounding box, segmentasi mask, atau teks deskripsi.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Representasi Gambar Digital -->
+    <section class="content-section">
+      <h2>3. Cara Komputer "Melihat" Gambar</h2>
+      <p>
+        Komputer tidak melihat gambar seperti manusia. Bagi komputer, sebuah foto hanyalah
+        <strong>array (matriks) angka</strong> — setiap elemen menyimpan intensitas warna satu piksel.
+      </p>
+
+      <div class="illustration-wrap">
+        <img src="../assets/illustrations/image-pixel.svg"
+             alt="Representasi Piksel Gambar Digital" class="illustration"/>
+      </div>
+
+      <h3>Komponen Gambar Digital</h3>
+      <ul>
+        <li><strong>Piksel</strong>: Unit terkecil gambar. Setiap piksel memiliki nilai 0–255 (grayscale) atau tiga nilai RGB.</li>
+        <li><strong>Channel</strong>: Lapisan warna. RGB = 3 channel (Red, Green, Blue). Grayscale = 1 channel.</li>
+        <li><strong>Shape</strong>: Dimensi array gambar dinyatakan sebagai <code>(H, W, C)</code> — Tinggi × Lebar × Channel.</li>
+        <li><strong>Resolusi</strong>: Lebar × Tinggi dalam piksel. Gambar 1920×1080 = lebih dari 2 juta piksel.</li>
+      </ul>
+
+      <div class="code-block">
+        <div class="code-block__header">
+          <span class="code-lang">Python</span>
+          <button class="copy-btn" aria-label="Copy code">Copy</button>
+        </div>
+        <pre><code class="language-python">import numpy as np
+from PIL import Image
+
+# Buka gambar
+img = Image.open("foto.jpg")
+arr = np.array(img)
+
+print(f"Shape  : {arr.shape}")    # (H, W, C) misal (480, 640, 3)
+print(f"Dtype  : {arr.dtype}")    # uint8
+print(f"Min    : {arr.min()}")    # 0
+print(f"Max    : {arr.max()}")    # 255
+
+# Akses piksel pada baris 100, kolom 200
+piksel = arr[100, 200]   # array([R, G, B])
+print(f"Piksel : {piksel}")
+
+# Pisahkan channel
+R = arr[:, :, 0]   # channel merah
+G = arr[:, :, 1]   # channel hijau
+B = arr[:, :, 2]   # channel biru
+</code></pre>
+      </div>
+    </section>
+
+    <!-- 4. Task CV -->
+    <section class="content-section">
+      <h2>4. Task Utama Computer Vision</h2>
+      <div class="task-grid">
+        <div class="task-card">
+          <div class="task-icon">🏷️</div>
+          <h4>Image Classification</h4>
+          <p>Memberi label pada seluruh gambar. <em>Contoh: "Ini gambar kucing"</em></p>
+        </div>
+        <div class="task-card">
+          <div class="task-icon">📦</div>
+          <h4>Object Detection</h4>
+          <p>Mendeteksi dan melokalisasi objek dengan bounding box. <em>Contoh: YOLO, SSD</em></p>
+        </div>
+        <div class="task-card">
+          <div class="task-icon">🎭</div>
+          <h4>Segmentation</h4>
+          <p>Mengelompokkan setiap piksel ke kelas tertentu. <em>Semantic / Instance / Panoptic</em></p>
+        </div>
+        <div class="task-card">
+          <div class="task-icon">😊</div>
+          <h4>Face Recognition</h4>
+          <p>Identifikasi dan verifikasi wajah dalam gambar atau video secara real-time.</p>
+        </div>
+        <div class="task-card">
+          <div class="task-icon">🎨</div>
+          <h4>Image Generation</h4>
+          <p>Membuat gambar baru dari teks atau gambar referensi menggunakan GAN/Diffusion.</p>
+        </div>
+        <div class="task-card">
+          <div class="task-icon">📝</div>
+          <h4>OCR / Doc AI</h4>
+          <p>Membaca teks dari gambar atau dokumen — tanda, formulir, KTP, struk.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Aplikasi Nyata -->
+    <section class="content-section">
+      <h2>5. Aplikasi Nyata Computer Vision</h2>
+      <div class="app-grid">
+        <div class="app-card">
+          <strong>🏥 Kesehatan & Medis</strong>
+          <p>Analisis foto rontgen, MRI, deteksi kanker kulit, identifikasi retinopati diabetik.</p>
+        </div>
+        <div class="app-card">
+          <strong>🚗 Kendaraan Otonom</strong>
+          <p>Deteksi rambu lalu lintas, pejalan kaki, kendaraan lain, dan penanda jalan.</p>
+        </div>
+        <div class="app-card">
+          <strong>🏭 Industri &amp; Manufaktur</strong>
+          <p>Quality control otomatis — deteksi cacat produk di lini produksi.</p>
+        </div>
+        <div class="app-card">
+          <strong>🛒 Retail &amp; E-Commerce</strong>
+          <p>Visual search, pengenalan produk, checkout tanpa kasir (Amazon Go).</p>
+        </div>
+        <div class="app-card">
+          <strong>🔒 Keamanan</strong>
+          <p>CCTV pintar, pengenalan wajah di bandara, deteksi intrusi.</p>
+        </div>
+        <div class="app-card">
+          <strong>🌿 Pertanian</strong>
+          <p>Deteksi penyakit tanaman dari foto daun, drone pengawas lahan.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Sejarah Singkat -->
+    <section class="content-section">
+      <h2>6. Sejarah Singkat Computer Vision</h2>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-year">1966</div>
+          <div class="tl-body"><strong>Summer Vision Project</strong> — MIT. Target: menggambarkan isi gambar dalam satu musim panas. Ternyata jauh lebih sulit dari dugaan.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1980s</div>
+          <div class="tl-body"><strong>Feature Engineering</strong> — SIFT, HOG, Haar Cascade. Fitur dibuat manual oleh engineer.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2012</div>
+          <div class="tl-body"><strong>AlexNet</strong> — CNN pertama yang memenangkan ImageNet. Error rate 26% → 15.3%. Revolusi deep learning dimulai.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2015</div>
+          <div class="tl-body"><strong>ResNet</strong> — 152 layer dengan skip connection. Error rate di bawah manusia (3.57% vs 5%).</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2020</div>
+          <div class="tl-body"><strong>Vision Transformers (ViT)</strong> — Arsitektur Transformer untuk gambar. Menyaingi CNN di banyak benchmark.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2022+</div>
+          <div class="tl-body"><strong>CLIP, DALL-E, Stable Diffusion, SAM</strong> — Era multimodal dan generative AI. Teks ↔ Gambar semakin terintegrasi.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUMMARY BOX -->
+    <div class="summary-box">
+      <h3>📌 Rangkuman Materi 01</h3>
+      <ul>
+        <li>Computer Vision memungkinkan komputer memahami konten visual seperti gambar dan video.</li>
+        <li>Gambar digital adalah array angka — piksel dengan nilai 0–255 per channel RGB.</li>
+        <li>Pipeline CV: Input → Preprocessing → Feature Extraction → Model → Prediction.</li>
+        <li>Task utama: klasifikasi, deteksi, segmentasi, pengenalan wajah, generasi gambar.</li>
+        <li>Revolusi CV dimulai oleh AlexNet (2012) dan terus berkembang hingga ViT dan multimodal AI.</li>
+      </ul>
+    </div>
+
+    <!-- PREV/NEXT NAV -->
+    <div class="material-nav">
+      <span class="material-nav__prev"></span>
+      <a href="../practical/practical-01.html" class="btn-outline">💻 Lanjut ke Praktikum 01 →</a>
+      <a href="material-02.html" class="material-nav__next btn-primary">Materi 02 →</a>
+    </div>
+
+  </div><!-- end tab-panel theory -->
+
+  <!-- TAB: QUIZ -->
+  <div class="tab-panel" id="panel-quiz">
+    <div id="quiz-week01"></div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="../assets/img/logo-TKOM.png" alt="Logo TKOM" class="footer-logo" onerror="this.style.display='none'"/>
+      <div><strong>COM – Computer Vision Learning Platform</strong><small>Program Studi Teknik Komputer, Universitas Warmadewa</small></div>
+    </div>
+    <nav class="footer-links">
+      <a href="../index.html">Beranda</a>
+      <a href="../about.html">Tentang</a>
+      <a href="../references.html">Referensi</a>
+    </nav>
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="../assets/js/course-config.js"></script>
+<script src="../assets/js/progress.js"></script>
+<script src="../assets/js/quiz.js"></script>
+<script src="../assets/js/presentation.js"></script>
+<script src="../assets/js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const WEEK = 'week01';
+  if (typeof buildSidebar === 'function') buildSidebar(WEEK);
+  if (typeof initSearch === 'function') initSearch();
+  if (typeof initMobileSidebar === 'function') initMobileSidebar();
+  if (typeof Theme !== 'undefined') Theme.apply();
+  if (typeof initCopyButtons === 'function') initCopyButtons();
+  if (typeof Progress !== 'undefined') Progress.initPage(WEEK);
+
+  // Quiz
+  if (typeof Quiz !== 'undefined') Quiz.render(WEEK, 'quiz-week01');
+
+  // Tabs
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => { t.classList.remove('tab--active'); t.setAttribute('aria-selected','false'); });
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('tab-panel--active'));
+      btn.classList.add('tab--active');
+      btn.setAttribute('aria-selected','true');
+      const panel = document.getElementById('panel-' + btn.dataset.tab);
+      if (panel) panel.classList.add('tab-panel--active');
+    });
+  });
+
+  // Theme toggle
+  document.getElementById('theme-toggle')?.addEventListener('click', () => Theme?.toggle());
+
+  // Presentation
+  const slidesData = [
+    {
+      type: 'title',
+      eyebrow: 'Materi 01 · COM Computer Vision',
+      title: 'Introduction to Computer Vision',
+      subtitle: 'Konsep dasar, pipeline, dan aplikasi nyata CV',
+      footer: 'Gunakan ← → atau Space untuk navigasi'
+    },
+    {
+      type: 'content',
+      eyebrow: 'Definisi',
+      title: 'Apa itu Computer Vision?',
+      body: `<ul>
+        <li><strong>Computer Vision</strong> adalah sub-bidang AI yang memberi komputer kemampuan memahami konten visual</li>
+        <li>Bukan sekadar memproses gambar — tapi <em>memahami makna</em> di baliknya</li>
+        <li>Contoh: membedakan kucing vs anjing, mendeteksi tumor di MRI, membaca plat nomor</li>
+        <li><strong>CV vs Image Processing</strong>: IP memanipulasi gambar, CV memahami isi gambar</li>
+      </ul>`
+    },
+    {
+      type: 'content',
+      eyebrow: 'Representasi',
+      title: 'Cara Komputer Melihat Gambar',
+      body: `<ul>
+        <li>Gambar = <strong>array angka</strong> (0–255 per piksel)</li>
+        <li>RGB: 3 channel — Red, Green, Blue</li>
+        <li>Shape: <code>(Height, Width, Channels)</code> → misal <code>(224, 224, 3)</code></li>
+        <li>Piksel terang = nilai tinggi; piksel gelap = nilai rendah</li>
+      </ul>`,
+      visual: '<img src="../assets/illustrations/image-pixel.svg" alt="Pixel" style="width:100%;max-width:400px"/>'
+    },
+    {
+      type: 'content',
+      eyebrow: 'Pipeline',
+      title: 'Computer Vision Pipeline',
+      body: `<ol>
+        <li>📷 <strong>Input</strong> — kamera, file gambar, frame video</li>
+        <li>🖼️ <strong>Raw Image</strong> — array piksel mentah</li>
+        <li>⚙️ <strong>Preprocessing</strong> — resize, normalisasi, augmentasi</li>
+        <li>🔍 <strong>Feature Extraction</strong> — CNN mengekstrak pola penting</li>
+        <li>🧠 <strong>Model</strong> — belajar memetakan fitur → prediksi</li>
+        <li>📊 <strong>Output</strong> — label, bounding box, segmentasi</li>
+      </ol>`,
+      visual: '<img src="../assets/illustrations/computer-vision-pipeline.svg" alt="Pipeline" style="width:100%;max-width:480px"/>'
+    },
+    {
+      type: 'content',
+      eyebrow: 'Task Utama',
+      title: 'Apa yang Bisa Dilakukan CV?',
+      body: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:0.88em">
+        <div style="background:rgba(34,197,94,.1);padding:10px;border-radius:8px">🏷️ <strong>Classification</strong><br/>Label seluruh gambar</div>
+        <div style="background:rgba(14,165,233,.1);padding:10px;border-radius:8px">📦 <strong>Detection</strong><br/>Deteksi + lokasi objek</div>
+        <div style="background:rgba(168,85,247,.1);padding:10px;border-radius:8px">🎭 <strong>Segmentation</strong><br/>Label per piksel</div>
+        <div style="background:rgba(245,158,11,.1);padding:10px;border-radius:8px">😊 <strong>Face Recog.</strong><br/>Identitas dari wajah</div>
+        <div style="background:rgba(239,68,68,.1);padding:10px;border-radius:8px">🎨 <strong>Generation</strong><br/>Buat gambar baru</div>
+        <div style="background:rgba(26,115,64,.1);padding:10px;border-radius:8px">📝 <strong>OCR</strong><br/>Baca teks dari gambar</div>
+      </div>`
+    },
+    {
+      type: 'content',
+      eyebrow: 'Sejarah',
+      title: 'Milestone Computer Vision',
+      body: `<ul>
+        <li>🗓️ <strong>1966</strong> — MIT Summer Vision Project (start)</li>
+        <li>🗓️ <strong>1980s</strong> — SIFT, HOG, Haar Cascade (feature engineering)</li>
+        <li>🗓️ <strong>2012</strong> — AlexNet memenangkan ImageNet → deep learning era</li>
+        <li>🗓️ <strong>2015</strong> — ResNet 152 layer — akurasi melampaui manusia</li>
+        <li>🗓️ <strong>2020</strong> — Vision Transformers (ViT)</li>
+        <li>🗓️ <strong>2022+</strong> — CLIP, DALL-E, Stable Diffusion, SAM</li>
+      </ul>`
+    },
+    {
+      type: 'title',
+      eyebrow: 'Rangkuman',
+      title: 'Poin Kunci Materi 01',
+      subtitle: 'CV = memahami gambar • Pipeline 6 tahap • Berbagai task & aplikasi nyata',
+      footer: 'Lanjut ke Materi 02: Image Processing & Color Spaces'
+    }
+  ];
+
+  if (typeof Presentation !== 'undefined') {
+    Presentation.init(slidesData);
+    document.getElementById('pres-trigger')?.addEventListener('click', () => Presentation.start());
+    document.getElementById('pres-trigger2')?.addEventListener('click', () => Presentation.start());
+  }
+});
+</script>
+</body>
+</html>

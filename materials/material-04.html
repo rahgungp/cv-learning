@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Materi 04 – CNN Architecture | COM</title>
+  <link rel="icon" type="image/png" href="../assets/img/logo-TKOM.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css"/>
+</head>
+<body>
+
+<header class="site-header">
+  <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+  <a href="../index.html" class="header-brand">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo" class="header-logo" onerror="this.style.display='none'"/>
+    <span class="header-title">COM</span><span class="header-sub">Computer Vision</span>
+  </a>
+  <div class="header-search">
+    <input type="search" id="search-input" placeholder="Cari materi…" autocomplete="off"/>
+    <div id="search-results" class="search-dropdown" hidden></div>
+  </div>
+  <nav class="header-actions">
+    <button id="theme-toggle" class="btn-icon">🌙</button>
+    <button id="pres-trigger" class="btn-primary btn-sm">▶ Presentation Mode</button>
+  </nav>
+</header>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'"/>
+    <div class="sidebar-brand-text"><strong>COM</strong><small>Computer Vision</small></div>
+  </div>
+  <nav id="sidebar-nav" class="sidebar-nav"></nav>
+  <div class="sidebar-footer"><a href="../about.html">Tentang</a> · <a href="../references.html">Referensi</a></div>
+</aside>
+
+<div id="pres-overlay" class="pres-overlay" hidden role="dialog" aria-modal="true">
+  <div class="pres-progress-bar"><div class="pres-progress-fill" id="pres-prog"></div></div>
+  <div class="pres-slide" id="pres-slide"></div>
+  <div class="pres-controls">
+    <button id="pres-prev" class="pres-btn">‹</button>
+    <div class="pres-dots" id="pres-dots"></div>
+    <button id="pres-next" class="pres-btn">›</button>
+  </div>
+  <button id="pres-close" class="pres-close">✕</button>
+  <div class="pres-counter" id="pres-counter">1 / 1</div>
+  <div class="pres-hint">← → Navigate | Space Next | Esc Exit</div>
+</div>
+
+<main class="main-content" id="main-content">
+  <nav class="breadcrumb">
+    <a href="../index.html">🏠 Beranda</a><span class="breadcrumb-sep">›</span><span>Materi 04</span>
+  </nav>
+
+  <div class="article-header">
+    <div class="article-header__meta">
+      <span class="badge badge-blue">🧠 Core Skills</span>
+      <span class="badge badge-blue">Materi 04 dari 16</span>
+      <span class="badge" data-progress-week="week04">0%</span>
+    </div>
+    <h1 class="article-title">CNN Architecture</h1>
+    <p class="article-desc">Memahami arsitektur Convolutional Neural Network (CNN) secara mendalam — layer Conv, ReLU, Pooling, dan Fully Connected — beserta model-model legendaris.</p>
+    <div class="article-actions">
+      <button class="btn-primary" onclick="markTheoryRead('week04')">✅ Tandai Sudah Dibaca</button>
+      <a href="../practical/practical-04.html" class="btn-outline">💻 Ke Praktikum →</a>
+      <button id="pres-trigger2" class="btn-outline btn-green">▶ Presentation Mode</button>
+    </div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab tab--active" role="tab" data-tab="theory" aria-selected="true">📖 Teori</button>
+    <button class="tab" role="tab" data-tab="quiz" aria-selected="false">🧠 Kuis</button>
+  </div>
+
+  <div class="tab-panel tab-panel--active" id="panel-theory">
+
+    <section class="content-section">
+      <h2>1. Arsitektur CNN Overview</h2>
+      <p>
+        <strong>Convolutional Neural Network (CNN)</strong> adalah jenis jaringan saraf tiruan yang dirancang
+        khusus untuk memproses data grid — terutama gambar. CNN revolusioner karena <em>secara otomatis
+        mempelajari fitur</em> dari data, tanpa perlu feature engineering manual.
+      </p>
+
+      <div class="illustration-wrap">
+        <img src="../assets/illustrations/cnn-architecture.svg" alt="CNN Architecture" class="illustration"/>
+      </div>
+
+      <p>Tiga blok utama CNN:</p>
+      <ol>
+        <li><strong>Feature Extraction</strong>: Conv + ReLU + Pooling (berulang)</li>
+        <li><strong>Flatten</strong>: Ubah feature map 3D → vektor 1D</li>
+        <li><strong>Classification</strong>: Fully Connected Layer + Softmax</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>2. Convolutional Layer</h2>
+      <p>
+        Layer konvolusi berisi sekumpulan <strong>filter yang dapat dipelajari</strong> (learnable filters).
+        Setiap filter menghasilkan satu <em>feature map</em> yang merespons pola tertentu dalam gambar.
+      </p>
+      <ul>
+        <li>Filter kecil (3×3, 5×5) tapi banyak channel depth</li>
+        <li>Conv pertama: deteksi tepi/warna sederhana</li>
+        <li>Conv dalam: deteksi pola kompleks (mata, roda, teks...)</li>
+        <li>Jumlah parameter = <code>K × K × C_in × C_out + C_out</code> (bias)</li>
+      </ul>
+      <div class="code-block">
+        <div class="code-block__header"><span class="code-lang">Python (PyTorch)</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-python">import torch
+import torch.nn as nn
+
+# Conv2d(in_channels, out_channels, kernel_size, stride, padding)
+conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1)
+# Input: (batch, 3, 224, 224) → Output: (batch, 32, 224, 224)
+
+conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
+# Input: (batch, 32, 112, 112) → Output: (batch, 64, 112, 112)
+
+# Menghitung jumlah parameter layer pertama
+params = 3 * 32 * 3 * 3 + 32   # kernel + bias
+print(f"Parameter Conv1: {params:,}")  # 896
+</code></pre>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>3. Activation Function: ReLU</h2>
+      <p>
+        <strong>ReLU (Rectified Linear Unit)</strong> adalah fungsi aktivasi paling umum dalam CNN.
+        Menambahkan <em>non-linearitas</em> yang memungkinkan jaringan belajar pola kompleks.
+      </p>
+
+      <div class="info-box info-box--blue">
+        <strong>📐 Formula ReLU</strong><br/>
+        <code>f(x) = max(0, x)</code><br/>
+        Nilai negatif → 0 &nbsp;|&nbsp; Nilai positif → tetap sama
+      </div>
+
+      <div class="compare-table">
+        <table>
+          <thead><tr><th>Aktivasi</th><th>Formula</th><th>Keunggulan</th><th>Kelemahan</th></tr></thead>
+          <tbody>
+            <tr><td><strong>ReLU</strong></td><td>max(0, x)</td><td>Cepat, mengatasi vanishing gradient</td><td>Dying ReLU (neuron mati permanen)</td></tr>
+            <tr><td><strong>Leaky ReLU</strong></td><td>max(0.01x, x)</td><td>Mengatasi dying ReLU</td><td>Hyperparameter tambahan</td></tr>
+            <tr><td><strong>ELU</strong></td><td>x if x>0, α(eˣ−1) if x≤0</td><td>Output rata-rata mendekati 0</td><td>Komputasi lebih berat</td></tr>
+            <tr><td><strong>GELU</strong></td><td>x·Φ(x)</td><td>Populer di Transformer (GPT, ViT)</td><td>Lebih kompleks</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>4. Pooling Layer</h2>
+      <p>
+        Pooling mengurangi dimensi spasial feature map — <em>downsampling</em>.
+        Membuat representasi lebih ringkas dan model lebih tahan terhadap pergeseran (translation invariance).
+      </p>
+
+      <div class="task-grid">
+        <div class="task-card">
+          <div class="task-icon">📊</div>
+          <h4>Max Pooling</h4>
+          <p>Ambil nilai maksimum dalam window. Paling umum — mempertahankan fitur paling kuat.</p>
+        </div>
+        <div class="task-card">
+          <div class="task-icon">➗</div>
+          <h4>Average Pooling</h4>
+          <p>Rata-rata nilai dalam window. Lebih halus, sering digunakan di akhir arsitektur.</p>
+        </div>
+        <div class="task-card">
+          <div class="task-icon">🌐</div>
+          <h4>Global Average Pooling</h4>
+          <p>Rata-rata seluruh feature map → satu nilai per channel. Mengganti FC layer di arsitektur modern.</p>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-block__header"><span class="code-lang">Python (PyTorch)</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-python">import torch.nn as nn
+
+# MaxPool: window 2×2, stride 2 → output setengah ukuran
+maxpool = nn.MaxPool2d(kernel_size=2, stride=2)
+# Input: (batch, 64, 112, 112) → Output: (batch, 64, 56, 56)
+
+# Global Average Pooling
+gap = nn.AdaptiveAvgPool2d((1, 1))
+# Input: (batch, 512, 7, 7) → Output: (batch, 512, 1, 1)
+# Setelah flatten: (batch, 512)
+
+avgpool = nn.AvgPool2d(kernel_size=2, stride=2)
+</code></pre>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>5. Fully Connected Layer &amp; Output</h2>
+      <p>
+        Setelah feature extraction, feature map di-<em>flatten</em> menjadi vektor 1D, lalu diproses oleh
+        Fully Connected (FC) layer untuk menghasilkan prediksi akhir.
+      </p>
+      <div class="code-block">
+        <div class="code-block__header"><span class="code-lang">Python (PyTorch) — CNN Sederhana Lengkap</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-python">import torch
+import torch.nn as nn
+
+class SimpleCNN(nn.Module):
+    def __init__(self, num_classes=10):
+        super().__init__()
+        # Feature Extraction
+        self.features = nn.Sequential(
+            nn.Conv2d(3, 32, 3, padding=1),    # (3,224,224) → (32,224,224)
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2, 2),                 # (32,224,224) → (32,112,112)
+
+            nn.Conv2d(32, 64, 3, padding=1),   # (32,112,112) → (64,112,112)
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2, 2),                 # (64,112,112) → (64,56,56)
+
+            nn.Conv2d(64, 128, 3, padding=1),  # (64,56,56) → (128,56,56)
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2, 2),                 # (128,56,56) → (128,28,28)
+        )
+        # Classifier
+        self.classifier = nn.Sequential(
+            nn.Flatten(),                        # → (128*28*28,)
+            nn.Linear(128 * 28 * 28, 512),
+            nn.ReLU(inplace=True),
+            nn.Dropout(0.5),
+            nn.Linear(512, num_classes)
+        )
+
+    def forward(self, x):
+        x = self.features(x)
+        x = self.classifier(x)
+        return x   # Logits (sebelum softmax)
+
+model = SimpleCNN(num_classes=10)
+print(f"Total parameter: {sum(p.numel() for p in model.parameters()):,}")
+</code></pre>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>6. Arsitektur CNN Legendaris</h2>
+      <div class="compare-table">
+        <table>
+          <thead><tr><th>Model</th><th>Tahun</th><th>Inovasi Utama</th><th>Top-5 ImageNet</th></tr></thead>
+          <tbody>
+            <tr><td><strong>AlexNet</strong></td><td>2012</td><td>CNN dalam dengan GPU, ReLU, Dropout</td><td>15.3%</td></tr>
+            <tr><td><strong>VGG-16</strong></td><td>2014</td><td>16 layer, kernel 3×3 seragam</td><td>7.3%</td></tr>
+            <tr><td><strong>GoogLeNet</strong></td><td>2014</td><td>Inception module, 22 layer efisien</td><td>6.7%</td></tr>
+            <tr><td><strong>ResNet-50</strong></td><td>2015</td><td>Skip connection (residual), 50 layer</td><td>5.25%</td></tr>
+            <tr><td><strong>EfficientNet</strong></td><td>2019</td><td>Compound scaling (width/depth/res)</td><td>1.8%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-box info-box--green">
+        <strong>🏆 ResNet — Inovasi Skip Connection</strong><br/>
+        ResNet memperkenalkan <em>residual connection</em> (shortcut): output layer ditambah langsung ke
+        input beberapa layer kemudian. Mengatasi masalah <em>vanishing gradient</em> dan memungkinkan
+        jaringan sangat dalam (50, 101, 152+ layer) untuk dilatih.
+      </div>
+    </section>
+
+    <div class="summary-box">
+      <h3>📌 Rangkuman Materi 04</h3>
+      <ul>
+        <li>CNN = Conv + ReLU + Pool (berulang) + Flatten + FC + Softmax.</li>
+        <li>Conv layer mempelajari filter secara otomatis dari data.</li>
+        <li>ReLU = max(0,x) — menambahkan non-linearitas, mengatasi vanishing gradient.</li>
+        <li>Max Pooling mengurangi dimensi 2×, memberikan translation invariance.</li>
+        <li>ResNet (2015) memperkenalkan skip connection — memungkinkan jaringan >100 layer.</li>
+      </ul>
+    </div>
+
+    <div class="material-nav">
+      <a href="material-03.html" class="btn-outline">← Materi 03</a>
+      <a href="../practical/practical-04.html" class="btn-outline">💻 Praktikum 04</a>
+      <a href="material-05.html" class="btn-primary">Materi 05 →</a>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-quiz">
+    <div id="quiz-week04"></div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="../assets/img/logo-TKOM.png" alt="Logo" class="footer-logo" onerror="this.style.display='none'"/>
+      <div><strong>COM – Computer Vision Learning Platform</strong><small>Universitas Warmadewa</small></div>
+    </div>
+    <nav class="footer-links">
+      <a href="../index.html">Beranda</a><a href="../about.html">Tentang</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="../assets/js/course-config.js"></script>
+<script src="../assets/js/progress.js"></script>
+<script src="../assets/js/quiz.js"></script>
+<script src="../assets/js/presentation.js"></script>
+<script src="../assets/js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const WEEK = 'week04';
+  if (typeof buildSidebar === 'function') buildSidebar(WEEK);
+  if (typeof initSearch === 'function') initSearch();
+  if (typeof initMobileSidebar === 'function') initMobileSidebar();
+  if (typeof Theme !== 'undefined') Theme.apply();
+  if (typeof initCopyButtons === 'function') initCopyButtons();
+  if (typeof Progress !== 'undefined') Progress.initPage(WEEK);
+  if (typeof Quiz !== 'undefined') Quiz.render(WEEK, 'quiz-week04');
+
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => { t.classList.remove('tab--active'); t.setAttribute('aria-selected','false'); });
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('tab-panel--active'));
+      btn.classList.add('tab--active'); btn.setAttribute('aria-selected','true');
+      document.getElementById('panel-' + btn.dataset.tab)?.classList.add('tab-panel--active');
+    });
+  });
+
+  document.getElementById('theme-toggle')?.addEventListener('click', () => Theme?.toggle());
+
+  const slides = [
+    { type:'title', eyebrow:'Materi 04 · COM', title:'CNN Architecture', subtitle:'Convolutional Neural Network — dari piksel ke prediksi', footer:'← → untuk navigasi' },
+    { type:'content', eyebrow:'Overview', title:'Blok Utama CNN', body:`<ol>
+      <li>🔵 <strong>Conv Layer</strong> — ekstrak fitur (filter dipelajari otomatis)</li>
+      <li>🟣 <strong>ReLU</strong> — aktivasi non-linear: max(0, x)</li>
+      <li>🟡 <strong>Pooling</strong> — downsampling, translation invariance</li>
+      <li>⬜ <strong>Flatten</strong> — ubah 3D → vektor 1D</li>
+      <li>🟢 <strong>FC + Softmax</strong> — klasifikasi akhir</li>
+    </ol>`,
+      visual: '<img src="../assets/illustrations/cnn-architecture.svg" alt="CNN" style="width:100%;max-width:520px"/>'
+    },
+    { type:'content', eyebrow:'Convolutional Layer', title:'Learnable Filters', body:`<ul>
+      <li>Setiap filter = matriks bobot yang <em>dipelajari</em> dari data</li>
+      <li>Filter pertama: tepi dan warna sederhana</li>
+      <li>Filter dalam: pola kompleks (mata, tekstur, bentuk)</li>
+      <li>Parameter = K × K × C_in × C_out</li>
+      <li>Jauh lebih hemat dari FC layer penuh</li>
+    </ul>` },
+    { type:'content', eyebrow:'ReLU & Pooling', title:'Aktivasi dan Downsampling', body:`<ul>
+      <li><strong>ReLU</strong>: f(x) = max(0, x) — simpel tapi sangat efektif</li>
+      <li>Tanpa aktivasi non-linear → CNN = regresi linier saja</li>
+      <li><strong>Max Pooling 2×2</strong> → output setengah lebar dan tinggi</li>
+      <li>Global Avg Pool → gantikan FC besar di arsitektur modern</li>
+      <li>Dropout setelah FC → regularisasi, cegah overfitting</li>
+    </ul>` },
+    { type:'content', eyebrow:'Arsitektur Populer', title:'Model-Model Legendaris', body:`<ul>
+      <li>🏠 <strong>AlexNet (2012)</strong> — start revolusi deep learning</li>
+      <li>🏗️ <strong>VGG (2014)</strong> — sederhana, kernel 3×3 seragam</li>
+      <li>⚡ <strong>ResNet (2015)</strong> — skip connection, 50+ layer</li>
+      <li>🔬 <strong>EfficientNet (2019)</strong> — compound scaling</li>
+      <li>ImageNet error: 26% (2011) → 1.8% (2019)</li>
+    </ul>` },
+    { type:'title', eyebrow:'Rangkuman', title:'Poin Kunci Materi 04', subtitle:'Conv·ReLU·Pool·FC·Softmax·ResNet', footer:'Lanjut ke Materi 05: Transfer Learning' }
+  ];
+
+  if (typeof Presentation !== 'undefined') {
+    Presentation.init(slides);
+    document.getElementById('pres-trigger')?.addEventListener('click', () => Presentation.start());
+    document.getElementById('pres-trigger2')?.addEventListener('click', () => Presentation.start());
+  }
+});
+</script>
+</body>
+</html>

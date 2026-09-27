@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Praktikum 03 – Filtering & Edge Detection | COM</title>
+  <link rel="icon" type="image/png" href="../assets/img/logo-TKOM.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css"/>
+</head>
+<body>
+<header class="site-header">
+  <button class="sidebar-toggle" id="sidebar-toggle">&#9776;</button>
+  <a href="../index.html" class="header-brand">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo" class="header-logo" onerror="this.style.display=\'none\'"/>
+    <span class="header-title">COM</span><span class="header-sub">Computer Vision</span>
+  </a>
+  <div class="header-search"><input type="search" id="search-input" placeholder="Cari materi..." autocomplete="off"/><div id="search-results" class="search-dropdown" hidden></div></div>
+  <nav class="header-actions"><button id="theme-toggle" class="btn-icon">&#127769;</button></nav>
+</header>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo" class="sidebar-logo" onerror="this.style.display=\'none\'"/>
+    <div class="sidebar-brand-text"><strong>COM</strong><small>Computer Vision</small></div>
+  </div>
+  <nav id="sidebar-nav" class="sidebar-nav"></nav>
+  <div class="sidebar-footer"><a href="../about.html">Tentang</a> &middot; <a href="../references.html">Referensi</a></div>
+</aside>
+<main class="main-content" id="main-content">
+  <nav class="breadcrumb">
+    <a href="../index.html">&#127968; Beranda</a><span class="breadcrumb-sep">&rsaquo;</span>
+    <a href="../materials/material-03.html">Materi 03</a><span class="breadcrumb-sep">&rsaquo;</span>
+    <span>Praktikum 03</span>
+  </nav>
+  <div class="article-header">
+    <div class="article-header__meta">
+      <span class="badge badge-purple">&#128187; Praktikum</span>
+      <span class="badge badge-blue">Sesi 03</span>
+      <span class="badge" data-progress-week="week03">0%</span>
+    </div>
+    <h1 class="article-title">Praktikum 03: Filtering & Edge Detection</h1>
+    <p class="article-desc">Terapkan berbagai filter pada gambar nyata: Gaussian blur, Canny edge detection, dan Sobel operator.</p>
+    <div class="article-actions">
+      <a href="https://colab.research.google.com" target="_blank" rel="noopener" class="btn-primary">
+        &#9654; Buka di Google Colab
+      </a>
+      <button class="btn-outline" onclick="markPracticeComplete(\'week03\')">&#9989; Tandai Selesai</button>
+    </div>
+  </div>
+  <section class="content-section">
+    <h2>Step 1: Filter Dasar</h2>
+    <div class="code-block">
+      <div class="code-block__header"><span class="code-lang">Python</span><button class="copy-btn">Copy</button></div>
+      <pre><code class="language-python">import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+img = cv2.imread("sample.jpg", cv2.IMREAD_GRAYSCALE)
+
+# Berbagai filter blur
+gaussian = cv2.GaussianBlur(img, (11, 11), 0)
+median   = cv2.medianBlur(img, 11)
+bilateral = cv2.bilateralFilter(img, 9, 75, 75)
+
+# Sharpen
+kernel_sharp = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]], np.float32)
+sharpened = cv2.filter2D(img, -1, kernel_sharp)
+
+fig, axes = plt.subplots(2, 3, figsize=(14, 8))
+for ax, (image, title) in zip(axes.flat, [
+    (img, "Original"), (gaussian, "Gaussian Blur"),
+    (median, "Median Blur"), (bilateral, "Bilateral Filter"),
+    (sharpened, "Sharpened"), (np.clip(img.astype(int)-gaussian.astype(int)+128, 0, 255).astype(np.uint8), "Unsharp Mask")
+]):
+    ax.imshow(image, cmap="gray"); ax.set_title(title); ax.axis("off")
+plt.tight_layout(); plt.show()</code></pre>
+    </div>
+  </section>
+  <section class="content-section">
+    <h2>Step 2: Edge Detection</h2>
+    <div class="code-block">
+      <div class="code-block__header"><span class="code-lang">Python</span><button class="copy-btn">Copy</button></div>
+      <pre><code class="language-python">import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+img = cv2.imread("sample.jpg", cv2.IMREAD_GRAYSCALE)
+blurred = cv2.GaussianBlur(img, (5, 5), 0)
+
+# Canny edge detection
+edges_low  = cv2.Canny(blurred, 30, 100)
+edges_mid  = cv2.Canny(blurred, 80, 160)
+edges_high = cv2.Canny(blurred, 150, 250)
+
+# Sobel
+sobel_x = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=3)
+sobel_y = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=3)
+sobel_mag = np.sqrt(sobel_x**2 + sobel_y**2)
+sobel_mag = np.uint8(255 * sobel_mag / sobel_mag.max())
+
+# Laplacian
+laplacian = cv2.Laplacian(blurred, cv2.CV_64F)
+laplacian = np.uint8(np.abs(laplacian))
+
+fig, axes = plt.subplots(2, 3, figsize=(14, 8))
+for ax, (image, title) in zip(axes.flat, [
+    (img, "Original"), (edges_low, "Canny (Low)"),
+    (edges_mid, "Canny (Mid)"), (sobel_x, "Sobel X"),
+    (sobel_mag, "Sobel Magnitude"), (laplacian, "Laplacian")
+]):
+    ax.imshow(image, cmap="gray"); ax.set_title(title); ax.axis("off")
+plt.tight_layout(); plt.show()</code></pre>
+    </div>
+  </section>
+
+  <div class="material-nav">
+    <a href="../materials/material-03.html" class="btn-outline">&larr; Kembali ke Materi 03</a>
+    <button class="btn-primary" onclick="markPracticeComplete(\'week03\')">&#9989; Tandai Praktikum Selesai</button>
+    <a href="practical-04.html" class="btn-outline">Praktikum 04 &rarr;</a>
+  </div>
+</main>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="../assets/img/logo-TKOM.png" alt="Logo" class="footer-logo" onerror="this.style.display=\'none\'"/>
+      <div><strong>COM &ndash; Computer Vision Learning Platform</strong><small>Universitas Warmadewa</small></div>
+    </div>
+    <nav class="footer-links"><a href="../index.html">Beranda</a><a href="../about.html">Tentang</a></nav>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="../assets/js/course-config.js"></script>
+<script src="../assets/js/progress.js"></script>
+<script src="../assets/js/main.js"></script>
+<script>
+function markPracticeComplete(week) {
+  if (typeof Progress !== \'undefined\') {
+    Progress.mark(week, \'practice\');
+    document.querySelectorAll(\'button[onclick*="markPracticeComplete"]\').forEach(b => {
+      b.textContent = \'\u2705 Selesai!\'; b.disabled = true;
+    });
+  }
+}
+document.addEventListener(\'DOMContentLoaded\', () => {
+  if (typeof buildSidebar === \'function\') buildSidebar(\'week03\');
+  if (typeof initSearch === \'function\') initSearch();
+  if (typeof initMobileSidebar === \'function\') initMobileSidebar();
+  if (typeof Theme !== \'undefined\') Theme.apply();
+  if (typeof initCopyButtons === \'function\') initCopyButtons();
+  document.getElementById(\'theme-toggle\')?.addEventListener(\'click\', () => Theme?.toggle());
+});
+</script>
+</body>
+</html>

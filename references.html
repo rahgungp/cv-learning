@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Referensi | COM – Computer Vision</title>
+  <link rel="icon" type="image/png" href="assets/img/logo-TKOM.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<header class="site-header">
+  <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+  <a href="index.html" class="header-brand">
+    <img src="assets/img/logo-TKOM.png" alt="Logo" class="header-logo" onerror="this.style.display='none'"/>
+    <span class="header-title">COM</span><span class="header-sub">Computer Vision</span>
+  </a>
+  <div class="header-search">
+    <input type="search" id="search-input" placeholder="Cari materi…" autocomplete="off"/>
+    <div id="search-results" class="search-dropdown" hidden></div>
+  </div>
+  <nav class="header-actions"><button id="theme-toggle" class="btn-icon">🌙</button></nav>
+</header>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="assets/img/logo-TKOM.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'"/>
+    <div class="sidebar-brand-text"><strong>COM</strong><small>Computer Vision</small></div>
+  </div>
+  <nav id="sidebar-nav" class="sidebar-nav"></nav>
+  <div class="sidebar-footer"><a href="about.html">Tentang</a> · <a href="references.html">Referensi</a></div>
+</aside>
+
+<main class="main-content" id="main-content">
+  <nav class="breadcrumb">
+    <a href="index.html">🏠 Beranda</a><span class="breadcrumb-sep">›</span><span>Referensi</span>
+  </nav>
+
+  <div class="article-header">
+    <div class="article-header__meta"><span class="badge badge-green">📚 Referensi</span></div>
+    <h1 class="article-title">Daftar Referensi &amp; Sumber Belajar</h1>
+    <p class="article-desc">Kumpulan referensi akademik, kursus online, dokumentasi library, dan paper ilmiah yang menjadi dasar materi platform ini.</p>
+  </div>
+
+  <!-- KURSUS ONLINE -->
+  <section class="content-section">
+    <h2>🎓 Kursus Online Utama</h2>
+    <div class="ref-list">
+      <div class="ref-card">
+        <div class="ref-num">1</div>
+        <div class="ref-body">
+          <h4><a href="https://huggingface.co/learn/computer-vision-course" target="_blank" rel="noopener">Hugging Face Computer Vision Course</a></h4>
+          <p>Kursus resmi Hugging Face yang mencakup Computer Vision dari dasar hingga advanced menggunakan 🤗 Transformers. Sumber utama platform ini.</p>
+          <span class="ref-tag">Free · Online · Python</span>
+        </div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-num">2</div>
+        <div class="ref-body">
+          <h4><a href="https://www.coursera.org/learn/convolutional-neural-networks" target="_blank" rel="noopener">Convolutional Neural Networks — deeplearning.ai (Coursera)</a></h4>
+          <p>Kursus CNN dari Andrew Ng. Mencakup CNN architecture, case studies (LeNet, AlexNet, VGG, ResNet, Inception), object detection, face recognition.</p>
+          <span class="ref-tag">Coursera · Paid/Audit · Certificate</span>
+        </div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-num">3</div>
+        <div class="ref-body">
+          <h4><a href="https://www.intel.com/content/www/us/en/developer/learn/courses/computer-vision-course.html" target="_blank" rel="noopener">Intel AI — Computer Vision Course</a></h4>
+          <p>Kursus Computer Vision dari Intel Developer Program. Fokus pada optimasi model untuk hardware Intel (OpenVINO, edge deployment).</p>
+          <span class="ref-tag">Intel · Free · Certification</span>
+        </div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-num">4</div>
+        <div class="ref-body">
+          <h4><a href="https://cs231n.stanford.edu/" target="_blank" rel="noopener">CS231n: Deep Learning for Computer Vision — Stanford</a></h4>
+          <p>Kursus legendaris Stanford oleh Fei-Fei Li, Andrej Karpathy, dkk. Materi lecture notes dan assignment tersedia bebas.</p>
+          <span class="ref-tag">Stanford · Free Notes · Academic</span>
+        </div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-num">5</div>
+        <div class="ref-body">
+          <h4><a href="https://www.microsoft.com/en-us/research/project/computer-vision/" target="_blank" rel="noopener">Microsoft Research — Computer Vision</a></h4>
+          <p>Koleksi riset dan tutorial Computer Vision dari Microsoft Research, termasuk Azure AI Vision services.</p>
+          <span class="ref-tag">Microsoft · Research · Tools</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUKU -->
+  <section class="content-section">
+    <h2>📖 Buku Teks</h2>
+    <div class="ref-list">
+      <div class="ref-card">
+        <div class="ref-num">6</div>
+        <div class="ref-body">
+          <h4>Deep Learning — Goodfellow, Bengio, Courville (2016)</h4>
+          <p>Textbook komprehensif deep learning. Chapter 9 khusus CNN. Tersedia gratis di <a href="https://www.deeplearningbook.org/" target="_blank">deeplearningbook.org</a>.</p>
+          <span class="ref-tag">MIT Press · Free Online · Foundational</span>
+        </div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-num">7</div>
+        <div class="ref-body">
+          <h4>Computer Vision: Algorithms and Applications — Richard Szeliski (2022)</h4>
+          <p>Buku referensi Computer Vision klasik, edisi ke-2. Mencakup dari image formation hingga 3D reconstruction. <a href="https://szeliski.org/Book/" target="_blank">Tersedia gratis</a>.</p>
+          <span class="ref-tag">Springer · Free PDF · Comprehensive</span>
+        </div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-num">8</div>
+        <div class="ref-body">
+          <h4>Dive into Deep Learning — Zhang et al. (2023)</h4>
+          <p>Buku interaktif dengan kode PyTorch/MXNet/TensorFlow yang berjalan langsung. <a href="https://d2l.ai/" target="_blank">d2l.ai</a>.</p>
+          <span class="ref-tag">d2l.ai · Interactive · Free</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAPER KUNCI -->
+  <section class="content-section">
+    <h2>📄 Paper Ilmiah Kunci</h2>
+    <div class="ref-list">
+      <div class="ref-card">
+        <div class="ref-num">9</div>
+        <div class="ref-body">
+          <h4>ImageNet Classification with Deep CNNs — Krizhevsky et al. (2012)</h4>
+          <p>"AlexNet" paper yang memulai revolusi deep learning. Error rate dari 26% ke 15.3% di ImageNet.</p>
+          <span class="ref-tag">NeurIPS 2012 · AlexNet · Milestone</span>
+        </div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-num">10</div>
+        <div class="ref-body">
+          <h4>Deep Residual Learning — He et al. (2015)</h4>
+          <p>ResNet paper memperkenalkan skip connections. Memungkinkan pelatihan jaringan sangat dalam (100+ layer).</p>
+          <span class="ref-tag">CVPR 2016 · ResNet · Skip Connection</span>
+        </div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-num">11</div>
+        <div class="ref-body">
+          <h4>An Image is Worth 16×16 Words — Dosovitskiy et al. (2020)</h4>
+          <p>Vision Transformer (ViT) paper — menunjukkan bahwa Transformer murni dapat menyaingi CNN tanpa convolution.</p>
+          <span class="ref-tag">ICLR 2021 · ViT · Transformer</span>
+        </div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-num">12</div>
+        <div class="ref-body">
+          <h4>Learning Transferable Visual Models From Natural Language Supervision — Radford et al. (2021)</h4>
+          <p>CLIP paper dari OpenAI. Contrastive language-image pre-training yang menghubungkan teks dan gambar.</p>
+          <span class="ref-tag">ICML 2021 · CLIP · Multimodal</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOOLS & LIBRARIES -->
+  <section class="content-section">
+    <h2>🛠️ Tools &amp; Library</h2>
+    <div class="app-grid">
+      <div class="app-card">
+        <strong><a href="https://pytorch.org/" target="_blank">PyTorch</a></strong>
+        <p>Framework deep learning utama yang digunakan dalam semua praktikum platform ini.</p>
+      </div>
+      <div class="app-card">
+        <strong><a href="https://docs.opencv.org/" target="_blank">OpenCV</a></strong>
+        <p>Library Computer Vision yang paling banyak digunakan untuk image processing dan real-time CV.</p>
+      </div>
+      <div class="app-card">
+        <strong><a href="https://huggingface.co/docs/transformers" target="_blank">🤗 Transformers</a></strong>
+        <p>Ribuan pretrained model Vision Transformer, CLIP, SAM, dan multimodal siap pakai.</p>
+      </div>
+      <div class="app-card">
+        <strong><a href="https://torchvision.readthedocs.io/" target="_blank">torchvision</a></strong>
+        <p>Dataset, transforms, dan pretrained models (ResNet, EfficientNet, ViT) untuk PyTorch.</p>
+      </div>
+      <div class="app-card">
+        <strong><a href="https://scikit-image.org/" target="_blank">scikit-image</a></strong>
+        <p>Image processing algorithms untuk Python dengan API yang bersih dan intuitif.</p>
+      </div>
+      <div class="app-card">
+        <strong><a href="https://colab.research.google.com/" target="_blank">Google Colab</a></strong>
+        <p>Jupyter notebook gratis dengan GPU — digunakan untuk semua praktikum platform ini.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATASET -->
+  <section class="content-section">
+    <h2>🗂️ Dataset Populer</h2>
+    <div class="compare-table">
+      <table>
+        <thead><tr><th>Dataset</th><th>Task</th><th>Ukuran</th><th>Link</th></tr></thead>
+        <tbody>
+          <tr><td><strong>ImageNet (ILSVRC)</strong></td><td>Classification</td><td>14M gambar, 1000 kelas</td><td><a href="https://www.image-net.org/" target="_blank">image-net.org</a></td></tr>
+          <tr><td><strong>COCO</strong></td><td>Detection, Segmentation</td><td>330K gambar, 80 kelas</td><td><a href="https://cocodataset.org/" target="_blank">cocodataset.org</a></td></tr>
+          <tr><td><strong>CIFAR-10/100</strong></td><td>Classification</td><td>60K gambar, 10/100 kelas</td><td><a href="https://www.cs.toronto.edu/~kriz/cifar.html" target="_blank">toronto.edu</a></td></tr>
+          <tr><td><strong>Pascal VOC</strong></td><td>Detection</td><td>11K gambar, 20 kelas</td><td><a href="http://host.robots.ox.ac.uk/pascal/VOC/" target="_blank">ox.ac.uk</a></td></tr>
+          <tr><td><strong>Open Images V7</strong></td><td>Classification, Detection</td><td>9M gambar</td><td><a href="https://storage.googleapis.com/openimages/web/" target="_blank">Google</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="assets/img/logo-TKOM.png" alt="Logo" class="footer-logo" onerror="this.style.display='none'"/>
+      <div><strong>COM – Computer Vision Learning Platform</strong><small>Program Studi Teknik Komputer, Universitas Warmadewa</small></div>
+    </div>
+    <nav class="footer-links">
+      <a href="index.html">Beranda</a><a href="about.html">Tentang</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="assets/js/course-config.js"></script>
+<script src="assets/js/progress.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof buildSidebar === 'function') buildSidebar('');
+  if (typeof initSearch === 'function') initSearch();
+  if (typeof initMobileSidebar === 'function') initMobileSidebar();
+  if (typeof Theme !== 'undefined') Theme.apply();
+  document.getElementById('theme-toggle')?.addEventListener('click', () => Theme?.toggle());
+});
+</script>
+</body>
+</html>

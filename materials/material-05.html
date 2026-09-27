@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Materi 05 – Transfer Learning & Fine-Tuning | COM</title>
+  <link rel="icon" type="image/png" href="../assets/img/logo-TKOM.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css"/>
+</head>
+<body>
+
+<header class="site-header">
+  <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+  <a href="../index.html" class="header-brand">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo" class="header-logo" onerror="this.style.display='none'"/>
+    <span class="header-title">COM</span><span class="header-sub">Computer Vision</span>
+  </a>
+  <div class="header-search">
+    <input type="search" id="search-input" placeholder="Cari materi…" autocomplete="off"/>
+    <div id="search-results" class="search-dropdown" hidden></div>
+  </div>
+  <nav class="header-actions">
+    <button id="theme-toggle" class="btn-icon">🌙</button>
+    <button id="pres-trigger" class="btn-primary btn-sm">▶ Presentation Mode</button>
+  </nav>
+</header>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'"/>
+    <div class="sidebar-brand-text"><strong>COM</strong><small>Computer Vision</small></div>
+  </div>
+  <nav id="sidebar-nav" class="sidebar-nav"></nav>
+  <div class="sidebar-footer"><a href="../about.html">Tentang</a> · <a href="../references.html">Referensi</a></div>
+</aside>
+
+<div id="pres-overlay" class="pres-overlay" hidden role="dialog" aria-modal="true">
+  <div class="pres-progress-bar"><div class="pres-progress-fill" id="pres-prog"></div></div>
+  <div class="pres-slide" id="pres-slide"></div>
+  <div class="pres-controls">
+    <button id="pres-prev" class="pres-btn">‹</button>
+    <div class="pres-dots" id="pres-dots"></div>
+    <button id="pres-next" class="pres-btn">›</button>
+  </div>
+  <button id="pres-close" class="pres-close">✕</button>
+  <div class="pres-counter" id="pres-counter">1 / 1</div>
+  <div class="pres-hint">← → Navigate | Space Next | Esc Exit</div>
+</div>
+
+<main class="main-content" id="main-content">
+  <nav class="breadcrumb">
+    <a href="../index.html">🏠 Beranda</a><span class="breadcrumb-sep">›</span><span>Materi 05</span>
+  </nav>
+
+  <div class="article-header">
+    <div class="article-header__meta">
+      <span class="badge badge-green">🔄 Core Skills</span>
+      <span class="badge badge-blue">Materi 05 dari 16</span>
+      <span class="badge" data-progress-week="week05">0%</span>
+    </div>
+    <h1 class="article-title">Transfer Learning &amp; Fine-Tuning</h1>
+    <p class="article-desc">Teknik paling praktis dalam Computer Vision modern: memanfaatkan model pretrained untuk task baru dengan data terbatas dan waktu training yang singkat.</p>
+    <div class="article-actions">
+      <button class="btn-primary" onclick="markTheoryRead('week05')">✅ Tandai Sudah Dibaca</button>
+      <a href="../practical/practical-05.html" class="btn-outline">💻 Ke Praktikum →</a>
+      <button id="pres-trigger2" class="btn-outline btn-green">▶ Presentation Mode</button>
+    </div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab tab--active" role="tab" data-tab="theory" aria-selected="true">📖 Teori</button>
+    <button class="tab" role="tab" data-tab="quiz" aria-selected="false">🧠 Kuis</button>
+  </div>
+
+  <div class="tab-panel tab-panel--active" id="panel-theory">
+
+    <section class="content-section">
+      <h2>1. Apa itu Transfer Learning?</h2>
+      <p>
+        <strong>Transfer Learning</strong> adalah teknik memanfaatkan pengetahuan yang sudah diperoleh model
+        dari satu task/dataset untuk digunakan pada task/dataset lain.
+        Alih-alih melatih CNN dari awal (random weights), kita menggunakan model yang sudah dilatih
+        pada dataset besar (seperti ImageNet dengan 14 juta gambar) sebagai titik awal.
+      </p>
+
+      <div class="illustration-wrap">
+        <img src="../assets/illustrations/transfer-learning.svg"
+             alt="Transfer Learning vs Training from Scratch" class="illustration"/>
+      </div>
+
+      <div class="info-box info-box--green">
+        <strong>💡 Analogi Sederhana</strong><br/>
+        Seperti seseorang yang sudah ahli bermain piano, lalu belajar keyboard/organ.
+        Mereka tidak mulai dari nol — pengetahuan musik yang ada ditransfer ke instrumen baru!
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>2. Mengapa Transfer Learning Bekerja?</h2>
+      <p>CNN yang dilatih di ImageNet mempelajari representasi visual yang <em>universal</em>:</p>
+      <ul>
+        <li><strong>Layer awal</strong>: tepi, sudut, warna, gradien — berguna untuk SEMUA gambar</li>
+        <li><strong>Layer tengah</strong>: tekstur, bagian objek — berguna untuk BANYAK domain</li>
+        <li><strong>Layer akhir</strong>: objek spesifik ImageNet — perlu diubah untuk task baru</li>
+      </ul>
+
+      <div class="compare-table">
+        <table>
+          <thead><tr><th>Aspek</th><th>Training from Scratch</th><th>Transfer Learning</th></tr></thead>
+          <tbody>
+            <tr><td>Data yang dibutuhkan</td><td>Jutaan sampel</td><td>Ratusan–ribuan cukup</td></tr>
+            <tr><td>Waktu training</td><td>Minggu/bulan (GPU cluster)</td><td>Jam/hari (GPU tunggal)</td></tr>
+            <tr><td>Biaya komputasi</td><td>Sangat tinggi</td><td>Rendah–menengah</td></tr>
+            <tr><td>Risiko overfitting</td><td>Tinggi (data kecil)</td><td>Rendah (bobot sudah baik)</td></tr>
+            <tr><td>Akurasi akhir</td><td>Tidak tentu</td><td>Umumnya tinggi</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>3. Dua Pendekatan Transfer Learning</h2>
+
+      <div class="task-grid">
+        <div class="task-card" style="border-color: #3b82f6;">
+          <div class="task-icon">🔒</div>
+          <h4>Feature Extraction</h4>
+          <p>Seluruh backbone <strong>dibekukan (freeze)</strong>. Hanya FC layer/classifier baru yang dilatih. Cocok untuk dataset sangat kecil (&lt;1000 sampel) atau domain mirip ImageNet.</p>
+          <small style="color:#6b7280">Training: Cepat · Risiko: Rendah · Kontrol: Minimal</small>
+        </div>
+        <div class="task-card" style="border-color: #8b5cf6;">
+          <div class="task-icon">🔓</div>
+          <h4>Fine-Tuning</h4>
+          <p>Sebagian/seluruh backbone <strong>dibuka (unfreeze)</strong> dan dilatih ulang dengan <em>learning rate kecil</em>. Cocok untuk dataset cukup besar atau domain berbeda dari ImageNet.</p>
+          <small style="color:#6b7280">Training: Lebih lama · Akurasi: Lebih tinggi · Risiko: Butuh LR kecil</small>
+        </div>
+      </div>
+
+      <h3>Kapan Menggunakan Masing-Masing?</h3>
+      <div class="compare-table">
+        <table>
+          <thead><tr><th>Kondisi</th><th>Strategi</th></tr></thead>
+          <tbody>
+            <tr><td>Data kecil + domain mirip ImageNet</td><td>Feature Extraction</td></tr>
+            <tr><td>Data kecil + domain berbeda</td><td>Feature Extraction + sedikit Fine-tuning</td></tr>
+            <tr><td>Data besar + domain mirip</td><td>Fine-tuning seluruh model</td></tr>
+            <tr><td>Data besar + domain sangat berbeda</td><td>Fine-tuning penuh / Train from scratch</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>4. Implementasi Transfer Learning</h2>
+
+      <h3>Feature Extraction dengan ResNet-50</h3>
+      <div class="code-block">
+        <div class="code-block__header"><span class="code-lang">Python (PyTorch)</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-python">import torch
+import torch.nn as nn
+from torchvision import models
+
+# 1. Load model pretrained (ImageNet)
+model = models.resnet50(weights='IMAGENET1K_V2')
+
+# 2. Freeze semua layer (Feature Extraction mode)
+for param in model.parameters():
+    param.requires_grad = False
+
+# 3. Ganti classifier dengan head baru untuk 5 kelas
+num_features = model.fc.in_features   # 2048 untuk ResNet-50
+model.fc = nn.Sequential(
+    nn.Linear(num_features, 256),
+    nn.ReLU(inplace=True),
+    nn.Dropout(0.5),
+    nn.Linear(256, 5)   # 5 kelas baru
+)
+
+# Hanya parameter FC baru yang dilatih
+trainable = [p for p in model.parameters() if p.requires_grad]
+print(f"Layer yang dilatih: {len(trainable)} parameter tensor")
+
+optimizer = torch.optim.Adam(model.fc.parameters(), lr=1e-3)
+</code></pre>
+      </div>
+
+      <h3>Fine-Tuning: Unfreeze Layer Terakhir</h3>
+      <div class="code-block">
+        <div class="code-block__header"><span class="code-lang">Python (PyTorch)</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-python">import torch
+from torchvision import models
+import torch.nn as nn
+
+model = models.resnet50(weights='IMAGENET1K_V2')
+
+# Freeze semua kecuali layer4 dan fc
+for name, param in model.named_parameters():
+    if 'layer4' not in name and 'fc' not in name:
+        param.requires_grad = False
+
+# Ganti head
+model.fc = nn.Linear(2048, 10)
+
+# Fine-tuning: LR berbeda untuk backbone vs head
+optimizer = torch.optim.Adam([
+    {'params': model.layer4.parameters(), 'lr': 1e-5},  # LR kecil untuk backbone
+    {'params': model.fc.parameters(),     'lr': 1e-3},  # LR normal untuk head
+])
+
+print("Layer yang dilatih:")
+for name, p in model.named_parameters():
+    if p.requires_grad:
+        print(f"  {name}: {p.shape}")
+</code></pre>
+      </div>
+
+      <h3>Hugging Face: Image Classification</h3>
+      <div class="code-block">
+        <div class="code-block__header"><span class="code-lang">Python (Hugging Face)</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-python">from transformers import ViTForImageClassification, ViTImageProcessor
+from datasets import load_dataset
+import torch
+
+# Load pretrained ViT
+model_name = "google/vit-base-patch16-224"
+processor = ViTImageProcessor.from_pretrained(model_name)
+model = ViTForImageClassification.from_pretrained(
+    model_name,
+    num_labels=10,         # Sesuaikan dengan kelas task kita
+    ignore_mismatched_sizes=True   # Ganti head lama
+)
+
+# Proses gambar
+from PIL import Image
+img = Image.open("test.jpg")
+inputs = processor(images=img, return_tensors="pt")
+
+# Prediksi
+with torch.no_grad():
+    outputs = model(**inputs)
+    logits = outputs.logits
+    pred_class = logits.argmax(-1).item()
+    print(f"Predicted class: {pred_class}")
+</code></pre>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>5. Evaluasi Model: Confusion Matrix &amp; Metrik</h2>
+      <p>Setelah training, evaluasi performa model secara komprehensif:</p>
+
+      <div class="compare-table">
+        <table>
+          <thead><tr><th>Metrik</th><th>Formula</th><th>Kapan Gunakan</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Accuracy</strong></td><td>TP+TN / Total</td><td>Dataset seimbang</td></tr>
+            <tr><td><strong>Precision</strong></td><td>TP / (TP+FP)</td><td>Minimasi false positive</td></tr>
+            <tr><td><strong>Recall</strong></td><td>TP / (TP+FN)</td><td>Minimasi false negative (medis)</td></tr>
+            <tr><td><strong>F1 Score</strong></td><td>2×P×R/(P+R)</td><td>Dataset tidak seimbang</td></tr>
+            <tr><td><strong>AUC-ROC</strong></td><td>Area under ROC curve</td><td>Evaluasi threshold-independent</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-block">
+        <div class="code-block__header"><span class="code-lang">Python (sklearn)</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-python">from sklearn.metrics import (classification_report,
+                              confusion_matrix, accuracy_score)
+import numpy as np
+
+# Prediksi vs ground truth
+y_true = [0, 1, 2, 0, 1, 2, 0, 1, 2]
+y_pred = [0, 0, 2, 0, 1, 1, 0, 1, 2]
+
+# Accuracy
+acc = accuracy_score(y_true, y_pred)
+print(f"Accuracy: {acc:.2%}")
+
+# Laporan lengkap
+classes = ['Cat', 'Dog', 'Bird']
+print(classification_report(y_true, y_pred, target_names=classes))
+
+# Confusion Matrix
+cm = confusion_matrix(y_true, y_pred)
+print("\nConfusion Matrix:")
+print(cm)
+# Baris = actual, Kolom = predicted
+# Diagonal = prediksi benar
+</code></pre>
+      </div>
+    </section>
+
+    <div class="summary-box">
+      <h3>📌 Rangkuman Materi 05</h3>
+      <ul>
+        <li>Transfer Learning = gunakan pengetahuan model pretrained untuk task baru.</li>
+        <li><strong>Feature Extraction</strong>: freeze backbone, latih hanya head baru — cocok data kecil.</li>
+        <li><strong>Fine-Tuning</strong>: unfreeze sebagian backbone dengan LR kecil — akurasi lebih tinggi.</li>
+        <li>ResNet, EfficientNet, ViT adalah model pretrained populer untuk CV.</li>
+        <li>Evaluasi dengan accuracy, F1-score, dan confusion matrix sesuai kebutuhan dataset.</li>
+      </ul>
+    </div>
+
+    <div class="material-nav">
+      <a href="material-04.html" class="btn-outline">← Materi 04</a>
+      <a href="../practical/practical-05.html" class="btn-outline">💻 Praktikum 05</a>
+      <a href="material-06.html" class="btn-primary">Materi 06 (Coming Soon) →</a>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-quiz">
+    <div id="quiz-week05"></div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="../assets/img/logo-TKOM.png" alt="Logo" class="footer-logo" onerror="this.style.display='none'"/>
+      <div><strong>COM – Computer Vision Learning Platform</strong><small>Universitas Warmadewa</small></div>
+    </div>
+    <nav class="footer-links">
+      <a href="../index.html">Beranda</a><a href="../about.html">Tentang</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="../assets/js/course-config.js"></script>
+<script src="../assets/js/progress.js"></script>
+<script src="../assets/js/quiz.js"></script>
+<script src="../assets/js/presentation.js"></script>
+<script src="../assets/js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const WEEK = 'week05';
+  if (typeof buildSidebar === 'function') buildSidebar(WEEK);
+  if (typeof initSearch === 'function') initSearch();
+  if (typeof initMobileSidebar === 'function') initMobileSidebar();
+  if (typeof Theme !== 'undefined') Theme.apply();
+  if (typeof initCopyButtons === 'function') initCopyButtons();
+  if (typeof Progress !== 'undefined') Progress.initPage(WEEK);
+  if (typeof Quiz !== 'undefined') Quiz.render(WEEK, 'quiz-week05');
+
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => { t.classList.remove('tab--active'); t.setAttribute('aria-selected','false'); });
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('tab-panel--active'));
+      btn.classList.add('tab--active'); btn.setAttribute('aria-selected','true');
+      document.getElementById('panel-' + btn.dataset.tab)?.classList.add('tab-panel--active');
+    });
+  });
+
+  document.getElementById('theme-toggle')?.addEventListener('click', () => Theme?.toggle());
+
+  const slides = [
+    { type:'title', eyebrow:'Materi 05 · COM', title:'Transfer Learning & Fine-Tuning', subtitle:'Belajar cepat dari pengetahuan model pretrained', footer:'← → untuk navigasi' },
+    { type:'content', eyebrow:'Konsep', title:'Apa itu Transfer Learning?', body:`<ul>
+      <li>Gunakan bobot model yang sudah dilatih di dataset besar (ImageNet)</li>
+      <li>Tidak mulai dari random weights — <em>berdiri di bahu raksasa</em></li>
+      <li>Hemat data, waktu, dan biaya komputasi</li>
+      <li>Cocok untuk domain yang mirip dengan dataset pretrained</li>
+    </ul>`,
+      visual:'<img src="../assets/illustrations/transfer-learning.svg" alt="Transfer Learning" style="width:100%;max-width:480px"/>'
+    },
+    { type:'content', eyebrow:'Dua Pendekatan', title:'Feature Extraction vs Fine-Tuning', body:`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:0.88em">
+      <div style="background:rgba(59,130,246,.1);padding:12px;border-radius:8px;border:1px solid #3b82f6">
+        <strong>🔒 Feature Extraction</strong><br/>
+        Freeze semua backbone<br/>
+        Latih hanya head baru<br/>
+        LR normal (1e-3)<br/>
+        ✅ Data sangat kecil
+      </div>
+      <div style="background:rgba(139,92,246,.1);padding:12px;border-radius:8px;border:1px solid #8b5cf6">
+        <strong>🔓 Fine-Tuning</strong><br/>
+        Unfreeze beberapa layer<br/>
+        LR sangat kecil (1e-5)<br/>
+        Butuh data lebih banyak<br/>
+        ✅ Akurasi lebih tinggi
+      </div>
+    </div>` },
+    { type:'content', eyebrow:'Model Pretrained', title:'Pilihan Model Populer', body:`<ul>
+      <li>🏗️ <strong>ResNet-50/101</strong> — kuat, stabil, banyak tutorial</li>
+      <li>⚡ <strong>EfficientNet-B0/B4</strong> — efisien, akurasi tinggi</li>
+      <li>🤗 <strong>ViT-base</strong> — Vision Transformer dari Google</li>
+      <li>📱 <strong>MobileNetV3</strong> — ringan, cocok mobile/edge</li>
+      <li>🎯 <strong>CLIP</strong> — multimodal, paham bahasa + gambar</li>
+    </ul>` },
+    { type:'content', eyebrow:'Evaluasi', title:'Metrik Model CV', body:`<ul>
+      <li><strong>Accuracy</strong> = prediksi benar / total (cocok dataset seimbang)</li>
+      <li><strong>Precision</strong> = minimasi false positive</li>
+      <li><strong>Recall</strong> = minimasi false negative (penting di medis!)</li>
+      <li><strong>F1 Score</strong> = harmonik mean P dan R</li>
+      <li><strong>Confusion Matrix</strong> — visualisasi kesalahan per kelas</li>
+    </ul>` },
+    { type:'title', eyebrow:'Selesai! Materi 01–05', title:'Kamu Telah Menguasai Fondasi CV! 🎉', subtitle:'Intro · Image Processing · Filtering · CNN · Transfer Learning', footer:'Lanjut ke Materi 06 saat tersedia' }
+  ];
+
+  if (typeof Presentation !== 'undefined') {
+    Presentation.init(slides);
+    document.getElementById('pres-trigger')?.addEventListener('click', () => Presentation.start());
+    document.getElementById('pres-trigger2')?.addEventListener('click', () => Presentation.start());
+  }
+});
+</script>
+</body>
+</html>

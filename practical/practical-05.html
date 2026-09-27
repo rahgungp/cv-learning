@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Praktikum 05 – Transfer Learning dengan ResNet | COM</title>
+  <link rel="icon" type="image/png" href="../assets/img/logo-TKOM.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css"/>
+</head>
+<body>
+<header class="site-header">
+  <button class="sidebar-toggle" id="sidebar-toggle">&#9776;</button>
+  <a href="../index.html" class="header-brand">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo" class="header-logo" onerror="this.style.display=\'none\'"/>
+    <span class="header-title">COM</span><span class="header-sub">Computer Vision</span>
+  </a>
+  <div class="header-search"><input type="search" id="search-input" placeholder="Cari materi..." autocomplete="off"/><div id="search-results" class="search-dropdown" hidden></div></div>
+  <nav class="header-actions"><button id="theme-toggle" class="btn-icon">&#127769;</button></nav>
+</header>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo" class="sidebar-logo" onerror="this.style.display=\'none\'"/>
+    <div class="sidebar-brand-text"><strong>COM</strong><small>Computer Vision</small></div>
+  </div>
+  <nav id="sidebar-nav" class="sidebar-nav"></nav>
+  <div class="sidebar-footer"><a href="../about.html">Tentang</a> &middot; <a href="../references.html">Referensi</a></div>
+</aside>
+<main class="main-content" id="main-content">
+  <nav class="breadcrumb">
+    <a href="../index.html">&#127968; Beranda</a><span class="breadcrumb-sep">&rsaquo;</span>
+    <a href="../materials/material-05.html">Materi 05</a><span class="breadcrumb-sep">&rsaquo;</span>
+    <span>Praktikum 05</span>
+  </nav>
+  <div class="article-header">
+    <div class="article-header__meta">
+      <span class="badge badge-purple">&#128187; Praktikum</span>
+      <span class="badge badge-blue">Sesi 05</span>
+      <span class="badge" data-progress-week="week05">0%</span>
+    </div>
+    <h1 class="article-title">Praktikum 05: Transfer Learning dengan ResNet</h1>
+    <p class="article-desc">Gunakan ResNet-50 pretrained untuk klasifikasi dataset custom dengan teknik Feature Extraction dan Fine-tuning.</p>
+    <div class="article-actions">
+      <a href="https://colab.research.google.com" target="_blank" rel="noopener" class="btn-primary">
+        &#9654; Buka di Google Colab
+      </a>
+      <button class="btn-outline" onclick="markPracticeComplete(\'week05\')">&#9989; Tandai Selesai</button>
+    </div>
+  </div>
+  <section class="content-section">
+    <h2>Step 1: Feature Extraction</h2>
+    <div class="code-block">
+      <div class="code-block__header"><span class="code-lang">Python</span><button class="copy-btn">Copy</button></div>
+      <pre><code class="language-python">import torch
+import torch.nn as nn
+from torchvision import models, datasets, transforms
+from torch.utils.data import DataLoader
+import matplotlib.pyplot as plt
+
+# Dataset (gunakan CIFAR-10 sebagai proxy)
+transform_train = transforms.Compose([
+    transforms.RandomResizedCrop(224), transforms.RandomHorizontalFlip(),
+    transforms.ToTensor(), transforms.Normalize([0.485,0.456,0.406],[0.229,0.224,0.225])
+])
+transform_val = transforms.Compose([
+    transforms.Resize(256), transforms.CenterCrop(224),
+    transforms.ToTensor(), transforms.Normalize([0.485,0.456,0.406],[0.229,0.224,0.225])
+])
+trainset = datasets.CIFAR10("./data", train=True,  download=True, transform=transform_train)
+valset   = datasets.CIFAR10("./data", train=False, download=True, transform=transform_val)
+trainloader = DataLoader(trainset, batch_size=32, shuffle=True)
+valloader   = DataLoader(valset,   batch_size=32, shuffle=False)
+
+# Load ResNet-50 Pretrained
+model = models.resnet50(weights="IMAGENET1K_V2")
+
+# FREEZE semua layer
+for param in model.parameters():
+    param.requires_grad = False
+
+# Ganti FC head
+model.fc = nn.Sequential(
+    nn.Linear(2048, 256), nn.ReLU(), nn.Dropout(0.4),
+    nn.Linear(256, 10)
+)
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model  = model.to(device)
+
+# Hanya latih FC
+trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+total_params     = sum(p.numel() for p in model.parameters())
+print(f"Trainable: {trainable_params:,} / {total_params:,} ({trainable_params/total_params:.1%})")
+
+optimizer = torch.optim.Adam(model.fc.parameters(), lr=1e-3)
+criterion = nn.CrossEntropyLoss()
+
+# 1 epoch cepat
+model.train()
+for i, (X, y) in enumerate(trainloader):
+    if i >= 50: break   # Hanya 50 batch untuk demo
+    X, y = X.to(device), y.to(device)
+    optimizer.zero_grad()
+    loss = criterion(model(X), y)
+    loss.backward(); optimizer.step()
+    if i % 10 == 0: print(f"Batch {i:3d} | Loss: {loss.item():.4f}")
+print("\n✅ Feature Extraction selesai!")</code></pre>
+    </div>
+  </section>
+
+  <div class="material-nav">
+    <a href="../materials/material-05.html" class="btn-outline">&larr; Kembali ke Materi 05</a>
+    <button class="btn-primary" onclick="markPracticeComplete(\'week05\')">&#9989; Tandai Praktikum Selesai</button>
+    
+  </div>
+</main>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="../assets/img/logo-TKOM.png" alt="Logo" class="footer-logo" onerror="this.style.display=\'none\'"/>
+      <div><strong>COM &ndash; Computer Vision Learning Platform</strong><small>Universitas Warmadewa</small></div>
+    </div>
+    <nav class="footer-links"><a href="../index.html">Beranda</a><a href="../about.html">Tentang</a></nav>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="../assets/js/course-config.js"></script>
+<script src="../assets/js/progress.js"></script>
+<script src="../assets/js/main.js"></script>
+<script>
+function markPracticeComplete(week) {
+  if (typeof Progress !== \'undefined\') {
+    Progress.mark(week, \'practice\');
+    document.querySelectorAll(\'button[onclick*="markPracticeComplete"]\').forEach(b => {
+      b.textContent = \'\u2705 Selesai!\'; b.disabled = true;
+    });
+  }
+}
+document.addEventListener(\'DOMContentLoaded\', () => {
+  if (typeof buildSidebar === \'function\') buildSidebar(\'week05\');
+  if (typeof initSearch === \'function\') initSearch();
+  if (typeof initMobileSidebar === \'function\') initMobileSidebar();
+  if (typeof Theme !== \'undefined\') Theme.apply();
+  if (typeof initCopyButtons === \'function\') initCopyButtons();
+  document.getElementById(\'theme-toggle\')?.addEventListener(\'click\', () => Theme?.toggle());
+});
+</script>
+</body>
+</html>

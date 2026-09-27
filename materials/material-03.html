@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Materi 03 – Filtering & Convolution | COM</title>
+  <link rel="icon" type="image/png" href="../assets/img/logo-TKOM.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css"/>
+</head>
+<body>
+
+<header class="site-header">
+  <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+  <a href="../index.html" class="header-brand">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo" class="header-logo" onerror="this.style.display='none'"/>
+    <span class="header-title">COM</span><span class="header-sub">Computer Vision</span>
+  </a>
+  <div class="header-search">
+    <input type="search" id="search-input" placeholder="Cari materi…" autocomplete="off"/>
+    <div id="search-results" class="search-dropdown" hidden></div>
+  </div>
+  <nav class="header-actions">
+    <button id="theme-toggle" class="btn-icon">🌙</button>
+    <button id="pres-trigger" class="btn-primary btn-sm">▶ Presentation Mode</button>
+  </nav>
+</header>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'"/>
+    <div class="sidebar-brand-text"><strong>COM</strong><small>Computer Vision</small></div>
+  </div>
+  <nav id="sidebar-nav" class="sidebar-nav"></nav>
+  <div class="sidebar-footer"><a href="../about.html">Tentang</a> · <a href="../references.html">Referensi</a></div>
+</aside>
+
+<div id="pres-overlay" class="pres-overlay" hidden role="dialog" aria-modal="true">
+  <div class="pres-progress-bar"><div class="pres-progress-fill" id="pres-prog"></div></div>
+  <div class="pres-slide" id="pres-slide"></div>
+  <div class="pres-controls">
+    <button id="pres-prev" class="pres-btn">‹</button>
+    <div class="pres-dots" id="pres-dots"></div>
+    <button id="pres-next" class="pres-btn">›</button>
+  </div>
+  <button id="pres-close" class="pres-close">✕</button>
+  <div class="pres-counter" id="pres-counter">1 / 1</div>
+  <div class="pres-hint">← → Navigate | Space Next | Esc Exit</div>
+</div>
+
+<main class="main-content" id="main-content">
+  <nav class="breadcrumb">
+    <a href="../index.html">🏠 Beranda</a><span class="breadcrumb-sep">›</span><span>Materi 03</span>
+  </nav>
+
+  <div class="article-header">
+    <div class="article-header__meta">
+      <span class="badge badge-green">⚙️ Core Skills</span>
+      <span class="badge badge-blue">Materi 03 dari 16</span>
+      <span class="badge" data-progress-week="week03">0%</span>
+    </div>
+    <h1 class="article-title">Filtering &amp; Convolution</h1>
+    <p class="article-desc">Memahami operasi konvolusi, berbagai jenis filter (blur, sharpen, edge detection), dan bagaimana ini menjadi fondasi CNN.</p>
+    <div class="article-actions">
+      <button class="btn-primary" onclick="markTheoryRead('week03')">✅ Tandai Sudah Dibaca</button>
+      <a href="../practical/practical-03.html" class="btn-outline">💻 Ke Praktikum →</a>
+      <button id="pres-trigger2" class="btn-outline btn-green">▶ Presentation Mode</button>
+    </div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab tab--active" role="tab" data-tab="theory" aria-selected="true">📖 Teori</button>
+    <button class="tab" role="tab" data-tab="quiz" aria-selected="false">🧠 Kuis</button>
+  </div>
+
+  <div class="tab-panel tab-panel--active" id="panel-theory">
+
+    <section class="content-section">
+      <h2>1. Operasi Konvolusi (Convolution)</h2>
+      <p>
+        <strong>Konvolusi</strong> adalah operasi matematika yang menggeser sebuah <em>kernel</em> (filter kecil)
+        di atas gambar, mengalikan nilai piksel dengan bobot kernel, lalu menjumlahkannya menjadi satu nilai output.
+      </p>
+
+      <div class="info-box info-box--blue">
+        <strong>🔢 Formula Konvolusi 2D</strong><br/>
+        <code>(I * K)[i,j] = Σ Σ I[i+m, j+n] · K[m,n]</code><br/>
+        Di mana I = gambar input, K = kernel, m,n = indeks kernel.
+      </div>
+
+      <h3>Konsep Kernel (Filter)</h3>
+      <p>Kernel adalah matriks kecil (biasanya 3×3 atau 5×5) yang menentukan efek konvolusi:</p>
+
+      <div class="kernel-display-grid">
+        <div class="kernel-card">
+          <h4>Identity (Tidak Berubah)</h4>
+          <div class="kernel-matrix">
+            <div class="krow"><span>0</span><span>0</span><span>0</span></div>
+            <div class="krow"><span>0</span><span class="k-center">1</span><span>0</span></div>
+            <div class="krow"><span>0</span><span>0</span><span>0</span></div>
+          </div>
+          <p>Menghasilkan gambar sama persis</p>
+        </div>
+        <div class="kernel-card">
+          <h4>Blur (Averaging)</h4>
+          <div class="kernel-matrix">
+            <div class="krow"><span>1</span><span>1</span><span>1</span></div>
+            <div class="krow"><span>1</span><span class="k-center">1</span><span>1</span></div>
+            <div class="krow"><span>1</span><span>1</span><span>1</span></div>
+          </div>
+          <p>Dibagi 9 — meratakan/mengaburkan</p>
+        </div>
+        <div class="kernel-card">
+          <h4>Sobel X (Edge Horizontal)</h4>
+          <div class="kernel-matrix">
+            <div class="krow"><span>-1</span><span>0</span><span>1</span></div>
+            <div class="krow"><span class="k-neg">-2</span><span class="k-center">0</span><span class="k-pos">2</span></div>
+            <div class="krow"><span>-1</span><span>0</span><span>1</span></div>
+          </div>
+          <p>Deteksi tepi vertikal (gradien X)</p>
+        </div>
+        <div class="kernel-card">
+          <h4>Sharpen (Ketajaman)</h4>
+          <div class="kernel-matrix">
+            <div class="krow"><span>0</span><span class="k-neg">-1</span><span>0</span></div>
+            <div class="krow"><span class="k-neg">-1</span><span class="k-center">5</span><span class="k-neg">-1</span></div>
+            <div class="krow"><span>0</span><span class="k-neg">-1</span><span>0</span></div>
+          </div>
+          <p>Mempertajam detail gambar</p>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-block__header"><span class="code-lang">Python (OpenCV)</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-python">import cv2
+import numpy as np
+
+img = cv2.imread("foto.jpg", cv2.IMREAD_GRAYSCALE)
+
+# Definisi kernel manual
+kernel_blur = np.ones((3,3), np.float32) / 9
+kernel_sharp = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]], np.float32)
+kernel_sobel_x = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]], np.float32)
+
+# Terapkan konvolusi dengan filter2D
+blurred  = cv2.filter2D(img, -1, kernel_blur)
+sharpened = cv2.filter2D(img, -1, kernel_sharp)
+edges_x   = cv2.filter2D(img, -1, kernel_sobel_x)
+
+print(f"Output shape: {blurred.shape}")   # Sama dengan input
+</code></pre>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>2. Filter Populer dalam Computer Vision</h2>
+
+      <h3>Gaussian Blur</h3>
+      <p>Filter blur paling populer. Berdasarkan distribusi Gaussian — piksel tengah diberi bobot lebih besar. Digunakan untuk mengurangi noise sebelum edge detection.</p>
+      <div class="code-block">
+        <div class="code-block__header"><span class="code-lang">Python</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-python">import cv2
+
+img = cv2.imread("foto.jpg")
+
+# Gaussian Blur — (kernel_size, sigmaX)
+blur3  = cv2.GaussianBlur(img, (3, 3), 0)    # Ringan
+blur11 = cv2.GaussianBlur(img, (11, 11), 0)  # Kuat
+blur21 = cv2.GaussianBlur(img, (21, 21), 5)  # Sangat kuat
+
+# Median Blur — cocok untuk salt-and-pepper noise
+median = cv2.medianBlur(img, 5)
+
+# Bilateral Filter — blur tapi pertahankan tepi
+bilateral = cv2.bilateralFilter(img, 9, 75, 75)
+</code></pre>
+      </div>
+
+      <h3>Edge Detection: Canny Algorithm</h3>
+      <p>Canny adalah algoritma deteksi tepi multi-stage yang paling banyak digunakan. Terdiri dari: Gaussian blur → Gradient computation → Non-maximum suppression → Double thresholding → Edge tracking.</p>
+      <div class="code-block">
+        <div class="code-block__header"><span class="code-lang">Python</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-python">import cv2
+import matplotlib.pyplot as plt
+
+img = cv2.imread("foto.jpg")
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# Gaussian blur sebelum Canny (mengurangi noise)
+blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+
+# Canny: (gambar, threshold_rendah, threshold_tinggi)
+edges_soft = cv2.Canny(blurred, 30, 100)    # Lebih banyak tepi
+edges_hard = cv2.Canny(blurred, 100, 200)   # Hanya tepi kuat
+
+# Sobel + magnitude gradient
+sobel_x = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
+sobel_y = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
+magnitude = np.sqrt(sobel_x**2 + sobel_y**2)
+
+plt.imshow(edges_hard, cmap='gray')
+plt.title('Canny Edge Detection')
+plt.show()
+</code></pre>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>3. Padding &amp; Stride</h2>
+      <p>Dua parameter penting dalam konvolusi yang menentukan ukuran output feature map:</p>
+
+      <div class="compare-table">
+        <table>
+          <thead><tr><th>Parameter</th><th>Deskripsi</th><th>Efek</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Padding = 0</strong> (valid)</td>
+              <td>Tidak tambah piksel di tepi</td>
+              <td>Output lebih kecil dari input</td>
+            </tr>
+            <tr>
+              <td><strong>Padding = 1</strong> (same)</td>
+              <td>Tambah 1 baris/kolom 0 di setiap tepi</td>
+              <td>Output sama ukuran input</td>
+            </tr>
+            <tr>
+              <td><strong>Stride = 1</strong></td>
+              <td>Geser kernel 1 piksel tiap langkah</td>
+              <td>Output paling detail</td>
+            </tr>
+            <tr>
+              <td><strong>Stride = 2</strong></td>
+              <td>Geser kernel 2 piksel tiap langkah</td>
+              <td>Output setengah ukuran (downsampling)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-box info-box--yellow">
+        <strong>📐 Rumus Ukuran Output</strong><br/>
+        <code>Output = ⌊(Input - Kernel + 2×Padding) / Stride⌋ + 1</code><br/>
+        Contoh: Input=28, Kernel=3, Padding=1, Stride=1 → Output = ⌊(28-3+2)/1⌋+1 = <strong>28</strong>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>4. Hubungan Konvolusi dengan CNN</h2>
+      <p>Inilah yang membuat CNN (Convolutional Neural Network) revolusioner:</p>
+
+      <div class="info-box info-box--green">
+        <strong>🧠 Insight Kunci</strong><br/>
+        Dalam konvolusi manual, <em>kita yang menentukan kernel</em> (blur, sharpen, dll).<br/>
+        Dalam CNN, <em>jaringan yang belajar kernel terbaik</em> untuk task melalui backpropagation!
+      </div>
+
+      <ul>
+        <li>Layer Conv di CNN = banyak kernel yang dipelajari secara otomatis</li>
+        <li>CNN layer awal belajar tepi dan warna, layer dalam belajar pola kompleks</li>
+        <li>Parameter sharing: kernel yang sama digeser ke seluruh gambar → efisien</li>
+        <li>Translation equivariance: objek di mana saja dalam gambar tetap terdeteksi</li>
+      </ul>
+    </section>
+
+    <div class="summary-box">
+      <h3>📌 Rangkuman Materi 03</h3>
+      <ul>
+        <li>Konvolusi = menggeser kernel di atas gambar, jumlahkan produk elemen.</li>
+        <li>Kernel menentukan efek: blur, sharpen, deteksi tepi, dll.</li>
+        <li>Filter penting: Gaussian blur (noise reduction), Canny (edge detection), Sobel (gradient).</li>
+        <li>Padding menjaga ukuran output; Stride mengontrol downsampling.</li>
+        <li>CNN = konvolusi dengan kernel yang <em>dipelajari otomatis</em> dari data.</li>
+      </ul>
+    </div>
+
+    <div class="material-nav">
+      <a href="material-02.html" class="btn-outline">← Materi 02</a>
+      <a href="../practical/practical-03.html" class="btn-outline">💻 Praktikum 03</a>
+      <a href="material-04.html" class="btn-primary">Materi 04 →</a>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-quiz">
+    <div id="quiz-week03"></div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="../assets/img/logo-TKOM.png" alt="Logo" class="footer-logo" onerror="this.style.display='none'"/>
+      <div><strong>COM – Computer Vision Learning Platform</strong><small>Universitas Warmadewa</small></div>
+    </div>
+    <nav class="footer-links">
+      <a href="../index.html">Beranda</a><a href="../about.html">Tentang</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="../assets/js/course-config.js"></script>
+<script src="../assets/js/progress.js"></script>
+<script src="../assets/js/quiz.js"></script>
+<script src="../assets/js/presentation.js"></script>
+<script src="../assets/js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const WEEK = 'week03';
+  if (typeof buildSidebar === 'function') buildSidebar(WEEK);
+  if (typeof initSearch === 'function') initSearch();
+  if (typeof initMobileSidebar === 'function') initMobileSidebar();
+  if (typeof Theme !== 'undefined') Theme.apply();
+  if (typeof initCopyButtons === 'function') initCopyButtons();
+  if (typeof Progress !== 'undefined') Progress.initPage(WEEK);
+  if (typeof Quiz !== 'undefined') Quiz.render(WEEK, 'quiz-week03');
+
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => { t.classList.remove('tab--active'); t.setAttribute('aria-selected','false'); });
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('tab-panel--active'));
+      btn.classList.add('tab--active'); btn.setAttribute('aria-selected','true');
+      document.getElementById('panel-' + btn.dataset.tab)?.classList.add('tab-panel--active');
+    });
+  });
+
+  document.getElementById('theme-toggle')?.addEventListener('click', () => Theme?.toggle());
+
+  const slides = [
+    { type:'title', eyebrow:'Materi 03 · COM', title:'Filtering & Convolution', subtitle:'Dari kernel manual ke filter yang dipelajari CNN', footer:'← → untuk navigasi' },
+    { type:'content', eyebrow:'Konsep Dasar', title:'Apa itu Konvolusi?', body:`<ul>
+      <li>Konvolusi = geser <strong>kernel</strong> kecil di atas gambar</li>
+      <li>Di setiap posisi: kalikan piksel × bobot kernel, jumlahkan</li>
+      <li>Output satu nilai per posisi → <strong>feature map</strong></li>
+      <li>Kernel 3×3 paling umum digunakan</li>
+    </ul>` },
+    { type:'content', eyebrow:'Filter', title:'Jenis-Jenis Filter', body:`<ul>
+      <li>🌫️ <strong>Gaussian Blur</strong> — reduksi noise, pilih σ sesuai kebutuhan</li>
+      <li>✏️ <strong>Canny</strong> — deteksi tepi multi-stage, standar industri</li>
+      <li>📐 <strong>Sobel</strong> — gradien X dan Y, hitung magnitude tepi</li>
+      <li>🔆 <strong>Sharpen</strong> — perkuat detail, center pixel bobot 5</li>
+      <li>🟦 <strong>Median</strong> — terbaik untuk salt-and-pepper noise</li>
+    </ul>` },
+    { type:'content', eyebrow:'Parameter', title:'Padding & Stride', body:`<ul>
+      <li><strong>Padding "same"</strong> → ukuran output = ukuran input</li>
+      <li><strong>Padding "valid"</strong> → output lebih kecil</li>
+      <li><strong>Stride 1</strong> → geser 1 piksel (detail penuh)</li>
+      <li><strong>Stride 2</strong> → geser 2 piksel (downsampling ×2)</li>
+      <li>Rumus: Output = ⌊(I - K + 2P) / S⌋ + 1</li>
+    </ul>` },
+    { type:'content', eyebrow:'CNN', title:'Konvolusi di CNN', body:`<ul>
+      <li>Konvolusi manual: kernel <em>kita tentukan</em></li>
+      <li>CNN: kernel <em>dipelajari otomatis</em> dari data via backprop</li>
+      <li>Layer awal CNN → tepi, warna</li>
+      <li>Layer dalam CNN → pola kompleks, bagian objek, objek utuh</li>
+      <li><strong>Parameter sharing</strong> → efisien (satu kernel untuk seluruh gambar)</li>
+    </ul>` },
+    { type:'title', eyebrow:'Rangkuman', title:'Poin Kunci Materi 03', subtitle:'Kernel · Blur · Edge · Padding · Stride · CNN', footer:'Lanjut ke Materi 04: CNN Architecture' }
+  ];
+
+  if (typeof Presentation !== 'undefined') {
+    Presentation.init(slides);
+    document.getElementById('pres-trigger')?.addEventListener('click', () => Presentation.start());
+    document.getElementById('pres-trigger2')?.addEventListener('click', () => Presentation.start());
+  }
+});
+</script>
+</body>
+</html>

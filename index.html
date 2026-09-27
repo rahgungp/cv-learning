@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Platform pembelajaran Computer Vision interaktif – Program Studi Teknik Komputer, Universitas Warmadewa"/>
+  <title>COM – Computer Vision Learning Platform</title>
+  <link rel="icon" type="image/png" href="assets/img/logo-TKOM.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     HEADER
+═══════════════════════════════════════ -->
+<header class="site-header">
+  <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle Sidebar">☰</button>
+
+  <a href="index.html" class="header-brand">
+    <img src="assets/img/logo-TKOM.png" alt="Logo TKOM" class="header-logo" onerror="this.style.display='none'"/>
+    <span class="header-title">COM</span>
+    <span class="header-sub">Computer Vision</span>
+  </a>
+
+  <div class="header-search">
+    <input type="search" id="search-input" placeholder="Cari materi…" autocomplete="off" aria-label="Cari materi"/>
+    <div id="search-results" class="search-dropdown" hidden></div>
+  </div>
+
+  <nav class="header-actions">
+    <button id="theme-toggle" class="btn-icon" aria-label="Toggle dark mode" title="Ganti tema">🌙</button>
+    <button id="pres-trigger" class="btn-primary btn-sm" title="Mode Presentasi">
+      ▶ Presentation Mode
+    </button>
+  </nav>
+</header>
+
+<!-- ═══════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="assets/img/logo-TKOM.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'"/>
+    <div class="sidebar-brand-text">
+      <strong>COM</strong>
+      <small>Computer Vision</small>
+    </div>
+  </div>
+
+  <div class="sidebar-search-wrap">
+    <input type="search" class="sidebar-search" placeholder="Filter materi…" id="sidebar-filter" aria-label="Filter sidebar"/>
+  </div>
+
+  <nav id="sidebar-nav" class="sidebar-nav" aria-label="Navigasi Materi"></nav>
+
+  <div class="sidebar-footer">
+    <a href="about.html">Tentang</a>
+    <span>·</span>
+    <a href="references.html">Referensi</a>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════
+     PRESENTATION OVERLAY
+═══════════════════════════════════════ -->
+<div id="pres-overlay" class="pres-overlay" hidden role="dialog" aria-modal="true" aria-label="Presentation Mode">
+  <div class="pres-progress-bar"><div class="pres-progress-fill" id="pres-prog"></div></div>
+  <div class="pres-slide" id="pres-slide"></div>
+  <div class="pres-controls">
+    <button id="pres-prev" class="pres-btn" aria-label="Slide sebelumnya">‹</button>
+    <div class="pres-dots" id="pres-dots"></div>
+    <button id="pres-next" class="pres-btn" aria-label="Slide berikutnya">›</button>
+  </div>
+  <button id="pres-close" class="pres-close" aria-label="Tutup presentasi">✕</button>
+  <div class="pres-counter" id="pres-counter">1 / 1</div>
+  <div class="pres-hint">← → Navigate &nbsp;|&nbsp; Space Next &nbsp;|&nbsp; Esc Exit</div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════ -->
+<main class="main-content" id="main-content">
+
+  <!-- HERO -->
+  <section class="hero-section">
+    <div class="hero-text">
+      <div class="hero-badge">🎓 Program Studi Teknik Komputer · Universitas Warmadewa</div>
+      <h1 class="hero-title">
+        Belajar <span class="text-accent">Computer Vision</span><br/>Dari Nol Hingga Mahir
+      </h1>
+      <p class="hero-desc">
+        16 modul pembelajaran terstruktur yang mencakup teori, praktikum Python, dan kuis interaktif.
+        Dilengkapi <strong>Presentation Mode</strong> untuk belajar fokus tanpa gangguan.
+      </p>
+      <div class="hero-actions">
+        <a href="materials/material-01.html" class="btn-primary">🚀 Mulai Belajar</a>
+        <a href="#learning-path" class="btn-outline">📚 Lihat Learning Path</a>
+        <button id="hero-pres-btn" class="btn-outline btn-green">▶ Presentation Mode</button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-svg-wrap">
+        <img src="assets/illustrations/computer-vision-pipeline.svg" alt="Computer Vision Pipeline" class="hero-svg"/>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats-row">
+    <div class="stat-card">
+      <span class="stat-num">16</span>
+      <span class="stat-label">Total Materi</span>
+    </div>
+    <div class="stat-card stat-accent">
+      <span class="stat-num">5</span>
+      <span class="stat-label">Sudah Tersedia</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">5</span>
+      <span class="stat-label">Sesi Praktikum</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">25+</span>
+      <span class="stat-label">Soal Kuis</span>
+    </div>
+    <div class="stat-card stat-purple">
+      <span class="stat-num">∞</span>
+      <span class="stat-label">Gratis Selamanya</span>
+    </div>
+  </section>
+
+  <!-- PROGRESS OVERVIEW (hanya jika ada progress) -->
+  <section class="progress-overview" id="progress-overview" hidden>
+    <h2 class="section-title">📊 Progress Belajarmu</h2>
+    <div class="progress-grid" id="progress-grid"></div>
+    <a href="#learning-path" class="btn-outline btn-sm mt-8">Lanjutkan Belajar →</a>
+  </section>
+
+  <!-- LEARNING PATH -->
+  <section class="learning-path" id="learning-path">
+    <div class="section-header">
+      <h2 class="section-title">🗺️ Learning Path</h2>
+      <p class="section-desc">Kurikulum terstruktur dari fundamental hingga topik lanjutan Computer Vision</p>
+    </div>
+
+    <div class="course-grid" id="course-grid">
+      <!-- Populated by JS -->
+      <noscript>JavaScript diperlukan untuk menampilkan daftar materi.</noscript>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features-section">
+    <div class="section-header">
+      <h2 class="section-title">✨ Fitur Platform</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">▶</div>
+        <h3>Presentation Mode</h3>
+        <p>Mode fullscreen tanpa gangguan sidebar. Navigasi dengan keyboard (← →) atau swipe di mobile. Ideal untuk belajar fokus atau presentasi kelas.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌙</div>
+        <h3>Dark / Light Mode</h3>
+        <p>Tema terang dan gelap yang dapat diubah kapan saja. Preferensi disimpan otomatis di browser.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Progress Tracking</h3>
+        <p>Progres belajar tersimpan di browser. Tandai materi yang sudah dibaca, praktikum selesai, dan kuis lulus.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <h3>Kuis Interaktif</h3>
+        <p>Setiap materi dilengkapi 5 soal pilihan ganda dengan penjelasan jawaban. Lulus ≥60% untuk mendapatkan centang hijau.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💻</div>
+        <h3>Kode Python Siap Pakai</h3>
+        <p>Semua contoh kode dapat di-copy sekali klik. Praktikum tersedia sebagai Google Colab notebook.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>Mobile Responsive</h3>
+        <p>Tampilan optimal di semua ukuran layar — laptop, tablet, maupun smartphone.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUICK START -->
+  <section class="quickstart-section">
+    <div class="quickstart-inner">
+      <h2>🚀 Cara Mulai Belajar</h2>
+      <div class="steps-row">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <p>Pilih <strong>Materi 01</strong> dari sidebar atau klik Mulai Belajar</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <p>Baca teori, aktifkan <strong>Presentation Mode</strong> untuk fokus</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <p>Kerjakan <strong>Praktikum</strong> di Google Colab</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <p>Uji pemahaman dengan <strong>Kuis</strong> di akhir materi</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="assets/img/logo-TKOM.png" alt="Logo TKOM" class="footer-logo" onerror="this.style.display='none'"/>
+      <div>
+        <strong>COM – Computer Vision Learning Platform</strong>
+        <small>Program Studi Teknik Komputer, Universitas Warmadewa</small>
+      </div>
+    </div>
+    <nav class="footer-links">
+      <a href="index.html">Beranda</a>
+      <a href="materials/material-01.html">Mulai Belajar</a>
+      <a href="about.html">Tentang</a>
+      <a href="references.html">Referensi</a>
+    </nav>
+    <p class="footer-copy">© 2024 Teknik Komputer Universitas Warmadewa. Semua materi bersifat edukatif.</p>
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="assets/js/course-config.js"></script>
+<script src="assets/js/progress.js"></script>
+<script src="assets/js/quiz.js"></script>
+<script src="assets/js/presentation.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+/* ─── Homepage-specific init ─── */
+document.addEventListener('DOMContentLoaded', () => {
+  // Build sidebar nav
+  if (typeof buildSidebar === 'function') buildSidebar('');
+  // Init search
+  if (typeof initSearch === 'function') initSearch();
+  // Init mobile sidebar
+  if (typeof initMobileSidebar === 'function') initMobileSidebar();
+  // Theme
+  if (typeof Theme !== 'undefined') Theme.apply();
+
+  // Build course grid
+  buildCourseGrid();
+
+  // Build progress overview
+  buildProgressOverview();
+
+  // Hero presentation button
+  const heroPresBtn = document.getElementById('hero-pres-btn');
+  const presBtn = document.getElementById('pres-trigger');
+
+  const homeSlidesData = [
+    {
+      type: 'title',
+      eyebrow: 'COM · Computer Vision Learning Platform',
+      title: 'Selamat Datang di Platform CV',
+      subtitle: 'Program Studi Teknik Komputer · Universitas Warmadewa',
+      footer: 'Gunakan ← → atau Space untuk navigasi'
+    },
+    {
+      type: 'content',
+      eyebrow: 'Apa itu Computer Vision?',
+      title: 'Memberi Mata pada Komputer',
+      body: `<ul>
+        <li><strong>Computer Vision</strong> adalah bidang AI yang memungkinkan komputer memahami konten visual</li>
+        <li>Komputer membaca gambar sebagai array angka (piksel) bukan "melihat" seperti manusia</li>
+        <li>Tugas utama: Klasifikasi, Deteksi Objek, Segmentasi, Generasi Gambar</li>
+        <li>Digunakan di: medis, kendaraan otonom, keamanan, retail, industri manufaktur</li>
+      </ul>`,
+      visual: '<img src="../assets/illustrations/computer-vision-pipeline.svg" alt="CV Pipeline" style="width:100%;max-width:480px"/>'
+    },
+    {
+      type: 'content',
+      eyebrow: 'Kurikulum',
+      title: '16 Modul Pembelajaran',
+      body: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:0.88em">
+        <div style="background:rgba(34,197,94,.1);padding:12px;border-radius:8px;border-left:3px solid #22c55e">
+          <strong style="color:#16a34a">✅ Tersedia (01–05)</strong><br/>
+          Intro CV · Image Processing · Filtering · CNN · Transfer Learning
+        </div>
+        <div style="background:rgba(148,163,184,.1);padding:12px;border-radius:8px;border-left:3px solid #94a3b8">
+          <strong style="color:#64748b">🔒 Coming Soon (06–16)</strong><br/>
+          ViT · CLIP · GANs · Detection · Segmentation · 3D · Optimization · Ethics
+        </div>
+      </div>`,
+    },
+    {
+      type: 'content',
+      eyebrow: 'Cara Belajar',
+      title: 'Alur Belajar yang Efektif',
+      body: `<ol>
+        <li>📖 Baca <strong>Materi Teori</strong> — konsep lengkap dengan ilustrasi</li>
+        <li>▶ Aktifkan <strong>Presentation Mode</strong> — belajar fokus, fullscreen</li>
+        <li>💻 Kerjakan <strong>Praktikum Python</strong> — hands-on di Google Colab</li>
+        <li>🧠 Selesaikan <strong>Kuis</strong> — uji pemahaman, simpan progres</li>
+      </ol>`,
+    },
+    {
+      type: 'title',
+      eyebrow: 'Siap Belajar?',
+      title: 'Mari Mulai dari Materi 01',
+      subtitle: 'Introduction to Computer Vision',
+      footer: 'Tekan Esc untuk kembali ke halaman'
+    }
+  ];
+
+  if (typeof Presentation !== 'undefined') {
+    Presentation.init(homeSlidesData);
+    [heroPresBtn, presBtn].forEach(btn => {
+      if (btn) btn.addEventListener('click', () => Presentation.start());
+    });
+  }
+
+  // Theme toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      if (typeof Theme !== 'undefined') Theme.toggle();
+    });
+  }
+});
+
+/* ─── Build course grid from courseConfig ─── */
+function buildCourseGrid() {
+  const grid = document.getElementById('course-grid');
+  if (!grid || typeof courseConfig === 'undefined') return;
+
+  const categoryLabels = {
+    'Fundamentals': { icon: '🌱', color: '#22c55e' },
+    'Core Skills':  { icon: '⚙️', color: '#0ea5e9' },
+    'Advanced':     { icon: '🔥', color: '#f59e0b' },
+    'Expert':       { icon: '🏆', color: '#8b5cf6' }
+  };
+
+  let html = '';
+  const weeks = Object.keys(courseConfig);
+
+  weeks.forEach(key => {
+    const cfg = courseConfig[key];
+    const num = parseInt(cfg.title ? key.replace('week', '') : 0, 10);
+    const numStr = String(num).padStart(2, '0');
+    const available = typeof isMaterialAvailable === 'function' ? isMaterialAvailable(key) : cfg.material;
+    const catInfo = categoryLabels[cfg.badge] || { icon: '📘', color: '#1a7340' };
+    const pct = typeof Progress !== 'undefined' ? Progress.getPercent(key) : 0;
+
+    if (available) {
+      html += `
+      <a href="materials/material-${numStr}.html" class="course-card course-card--available" data-week="${key}">
+        <div class="course-card__header" style="border-color:${catInfo.color}">
+          <span class="course-card__icon">${cfg.icon}</span>
+          <span class="course-card__num">Materi ${numStr}</span>
+          <span class="course-card__badge" style="background:${catInfo.color}20;color:${catInfo.color}">${catInfo.icon} ${cfg.badge}</span>
+        </div>
+        <h3 class="course-card__title">${cfg.title}</h3>
+        <div class="course-card__footer">
+          <div class="course-card__progress-bar">
+            <div class="course-card__progress-fill" style="width:${pct}%;background:${catInfo.color}"></div>
+          </div>
+          <span class="course-card__pct">${pct}%</span>
+        </div>
+        <div class="course-card__links">
+          <span class="chip chip-theory">📖 Teori</span>
+          ${cfg.practice ? '<span class="chip chip-practice">💻 Praktikum</span>' : ''}
+          <span class="chip chip-quiz">🧠 Kuis</span>
+        </div>
+      </a>`;
+    } else {
+      html += `
+      <div class="course-card course-card--locked" data-week="${key}">
+        <div class="course-card__header">
+          <span class="course-card__icon">${cfg.icon}</span>
+          <span class="course-card__num">Materi ${numStr}</span>
+          <span class="course-card__badge course-card__badge--locked">🔒 Coming Soon</span>
+        </div>
+        <h3 class="course-card__title">${cfg.title}</h3>
+        <p class="course-card__coming">Materi ini akan segera tersedia. Pantau terus!</p>
+      </div>`;
+    }
+  });
+
+  grid.innerHTML = html;
+}
+
+/* ─── Build progress overview ─── */
+function buildProgressOverview() {
+  if (typeof Progress === 'undefined') return;
+  const stats = Progress.totalStats();
+  if (stats.total === 0) return; // No progress yet, keep section hidden
+
+  const section = document.getElementById('progress-overview');
+  const grid = document.getElementById('progress-grid');
+  if (!section || !grid) return;
+
+  section.hidden = false;
+
+  const weeks = Object.keys(courseConfig).filter(k => courseConfig[k].material);
+  let html = '';
+  weeks.forEach(key => {
+    const pct = Progress.getPercent(key);
+    const cfg = courseConfig[key];
+    const num = key.replace('week', '').padStart(2, '0');
+    html += `
+    <a href="materials/material-${num}.html" class="progress-mini-card">
+      <span class="pmini-icon">${cfg.icon}</span>
+      <span class="pmini-title">Materi ${num}</span>
+      <div class="pmini-bar"><div class="pmini-fill" style="width:${pct}%"></div></div>
+      <span class="pmini-pct">${pct}%</span>
+    </a>`;
+  });
+  grid.innerHTML = html;
+}
+</script>
+</body>
+</html>

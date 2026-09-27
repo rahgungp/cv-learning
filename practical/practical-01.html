@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Praktikum 01 – Eksplorasi Gambar dengan Python | COM</title>
+  <link rel="icon" type="image/png" href="../assets/img/logo-TKOM.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css"/>
+</head>
+<body>
+
+<header class="site-header">
+  <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+  <a href="../index.html" class="header-brand">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo" class="header-logo" onerror="this.style.display='none'"/>
+    <span class="header-title">COM</span><span class="header-sub">Computer Vision</span>
+  </a>
+  <div class="header-search">
+    <input type="search" id="search-input" placeholder="Cari materi…" autocomplete="off"/>
+    <div id="search-results" class="search-dropdown" hidden></div>
+  </div>
+  <nav class="header-actions">
+    <button id="theme-toggle" class="btn-icon">🌙</button>
+  </nav>
+</header>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'"/>
+    <div class="sidebar-brand-text"><strong>COM</strong><small>Computer Vision</small></div>
+  </div>
+  <nav id="sidebar-nav" class="sidebar-nav"></nav>
+  <div class="sidebar-footer"><a href="../about.html">Tentang</a> · <a href="../references.html">Referensi</a></div>
+</aside>
+
+<main class="main-content" id="main-content">
+  <nav class="breadcrumb">
+    <a href="../index.html">🏠 Beranda</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="../materials/material-01.html">Materi 01</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Praktikum 01</span>
+  </nav>
+
+  <div class="article-header">
+    <div class="article-header__meta">
+      <span class="badge badge-purple">💻 Praktikum</span>
+      <span class="badge badge-blue">Sesi 01</span>
+      <span class="badge" data-progress-week="week01">0%</span>
+    </div>
+    <h1 class="article-title">Praktikum 01: Eksplorasi Gambar dengan Python</h1>
+    <p class="article-desc">Hands-on: baca gambar, lihat representasi array, pisahkan channel RGB, dan buat visualisasi dasar dengan OpenCV + PIL + Matplotlib.</p>
+    <div class="article-actions">
+      <a href="https://colab.research.google.com/drive/1example-p01" target="_blank" rel="noopener"
+         class="btn-primary colab-btn">
+        <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open in Colab" style="height:20px;vertical-align:middle"/>
+        &nbsp;Buka di Google Colab
+      </a>
+      <button class="btn-outline" onclick="markPracticeComplete('week01')">✅ Tandai Selesai</button>
+    </div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section class="content-section">
+    <div class="info-box info-box--blue">
+      <strong>📋 Tujuan Praktikum</strong>
+      <ul style="margin:8px 0 0 0">
+        <li>Membaca dan menampilkan gambar menggunakan PIL dan OpenCV</li>
+        <li>Memahami representasi array NumPy untuk gambar</li>
+        <li>Memisahkan dan menampilkan channel RGB secara terpisah</li>
+        <li>Melakukan konversi ke grayscale dan melihat nilai piksel</li>
+        <li>Membuat subplot multi-panel dengan Matplotlib</li>
+      </ul>
+    </div>
+
+    <h2>Instalasi Library</h2>
+    <div class="code-block">
+      <div class="code-block__header"><span class="code-lang">Shell (Jupyter/Colab)</span><button class="copy-btn">Copy</button></div>
+      <pre><code class="language-python">!pip install opencv-python-headless pillow matplotlib numpy</code></pre>
+    </div>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="content-section">
+    <h2>Step 1: Baca Gambar dengan PIL</h2>
+    <div class="code-block">
+      <div class="code-block__header"><span class="code-lang">Python</span><button class="copy-btn">Copy</button></div>
+      <pre><code class="language-python">from PIL import Image
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Download gambar sample (di Colab)
+# !wget -O sample.jpg https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/300px-Cat03.jpg
+
+# Buka gambar dengan PIL
+img_pil = Image.open("sample.jpg")
+
+print(f"Format : {img_pil.format}")      # JPEG
+print(f"Mode   : {img_pil.mode}")        # RGB
+print(f"Size   : {img_pil.size}")        # (width, height)
+
+# Konversi ke NumPy array
+img_arr = np.array(img_pil)
+print(f"\nShape  : {img_arr.shape}")     # (H, W, 3)
+print(f"Dtype  : {img_arr.dtype}")       # uint8
+print(f"Min    : {img_arr.min()}")       # 0
+print(f"Max    : {img_arr.max()}")       # 255
+
+# Tampilkan gambar
+plt.figure(figsize=(6, 5))
+plt.imshow(img_arr)
+plt.title(f"Gambar: {img_arr.shape}")
+plt.axis('off')
+plt.show()
+</code></pre>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="content-section">
+    <h2>Step 2: Eksplorasi Channel RGB</h2>
+    <div class="code-block">
+      <div class="code-block__header"><span class="code-lang">Python</span><button class="copy-btn">Copy</button></div>
+      <pre><code class="language-python">import numpy as np
+import matplotlib.pyplot as plt
+from PIL import Image
+
+img = np.array(Image.open("sample.jpg"))
+
+# Pisahkan channel
+R = img[:, :, 0]   # Channel merah
+G = img[:, :, 1]   # Channel hijau
+B = img[:, :, 2]   # Channel biru
+
+# Buat gambar per channel (dengan nol di channel lain)
+img_R = np.zeros_like(img); img_R[:, :, 0] = R
+img_G = np.zeros_like(img); img_G[:, :, 1] = G
+img_B = np.zeros_like(img); img_B[:, :, 2] = B
+
+# Tampilkan 4 panel
+fig, axes = plt.subplots(1, 4, figsize=(16, 4))
+titles  = ["Original (RGB)", "Red Channel", "Green Channel", "Blue Channel"]
+images  = [img, img_R, img_G, img_B]
+for ax, image, title in zip(axes, images, titles):
+    ax.imshow(image)
+    ax.set_title(title)
+    ax.axis('off')
+plt.tight_layout()
+plt.show()
+
+# Statistik per channel
+for name, ch in zip(['R', 'G', 'B'], [R, G, B]):
+    print(f"Channel {name}: min={ch.min()}, max={ch.max()}, mean={ch.mean():.1f}")
+</code></pre>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="content-section">
+    <h2>Step 3: Konversi Grayscale dan Akses Piksel</h2>
+    <div class="code-block">
+      <div class="code-block__header"><span class="code-lang">Python</span><button class="copy-btn">Copy</button></div>
+      <pre><code class="language-python">import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# OpenCV membaca dalam BGR!
+img_bgr = cv2.imread("sample.jpg")
+img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+
+# Konversi ke grayscale
+img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+
+print(f"Grayscale shape: {img_gray.shape}")    # (H, W) — 2D!
+print(f"Grayscale dtype: {img_gray.dtype}")    # uint8
+
+# Formula grayscale (luminance weighting):
+# Y = 0.299*R + 0.587*G + 0.114*B
+
+# Akses piksel tunggal
+piksel_rgb  = img_rgb[100, 150]        # array([R, G, B])
+piksel_gray = img_gray[100, 150]       # nilai integer tunggal
+print(f"\nPiksel [100,150] RGB  : {piksel_rgb}")
+print(f"Piksel [100,150] Gray : {piksel_gray}")
+
+# Akses region (bounding box)
+roi = img_rgb[50:150, 100:200]   # Baris 50-150, Kolom 100-200
+print(f"\nROI shape: {roi.shape}")
+
+# Tampilkan
+fig, axes = plt.subplots(1, 3, figsize=(14, 4))
+axes[0].imshow(img_rgb);    axes[0].set_title("RGB");       axes[0].axis('off')
+axes[1].imshow(img_gray, cmap='gray'); axes[1].set_title("Grayscale"); axes[1].axis('off')
+axes[2].imshow(roi);        axes[2].set_title("ROI");       axes[2].axis('off')
+plt.tight_layout()
+plt.show()
+</code></pre>
+    </div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="content-section">
+    <h2>Step 4: Simpan Gambar</h2>
+    <div class="code-block">
+      <div class="code-block__header"><span class="code-lang">Python</span><button class="copy-btn">Copy</button></div>
+      <pre><code class="language-python">import cv2
+from PIL import Image
+import numpy as np
+
+img_bgr = cv2.imread("sample.jpg")
+
+# Simpan dengan OpenCV
+cv2.imwrite("output_gray.jpg", cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY))
+cv2.imwrite("output_small.jpg", cv2.resize(img_bgr, (128, 128)))
+
+# Simpan dengan PIL
+img_pil = Image.open("sample.jpg")
+img_pil.save("output_pil.png")    # PNG (lossless)
+
+# Simpan dengan kualitas tertentu
+img_pil.save("output_q80.jpg", "JPEG", quality=80)
+
+print("✅ Semua gambar tersimpan!")
+</code></pre>
+    </div>
+
+    <div class="info-box info-box--green">
+      <strong>✅ Tantangan</strong><br/>
+      <ol>
+        <li>Hitung nilai piksel rata-rata untuk keseluruhan gambar</li>
+        <li>Cari piksel paling terang (nilai tertinggi) dan koordinatnya</li>
+        <li>Buat gambar "negatif" — balik nilai piksel (255 - nilai_piksel)</li>
+        <li>Crop region wajah dari gambar (jika ada) dan simpan sebagai file baru</li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="material-nav">
+    <a href="../materials/material-01.html" class="btn-outline">← Kembali ke Materi 01</a>
+    <button class="btn-primary" onclick="markPracticeComplete('week01')">✅ Tandai Praktikum Selesai</button>
+    <a href="practical-02.html" class="btn-outline">Praktikum 02 →</a>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="../assets/img/logo-TKOM.png" alt="Logo" class="footer-logo" onerror="this.style.display='none'"/>
+      <div><strong>COM – Computer Vision Learning Platform</strong><small>Universitas Warmadewa</small></div>
+    </div>
+    <nav class="footer-links"><a href="../index.html">Beranda</a><a href="../about.html">Tentang</a></nav>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="../assets/js/course-config.js"></script>
+<script src="../assets/js/progress.js"></script>
+<script src="../assets/js/main.js"></script>
+<script>
+function markPracticeComplete(week) {
+  if (typeof Progress !== 'undefined') {
+    Progress.mark(week, 'practice');
+    const btn = event.target;
+    btn.textContent = '✅ Selesai!';
+    btn.disabled = true;
+    btn.classList.add('btn-success');
+  }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof buildSidebar === 'function') buildSidebar('week01');
+  if (typeof initSearch === 'function') initSearch();
+  if (typeof initMobileSidebar === 'function') initMobileSidebar();
+  if (typeof Theme !== 'undefined') Theme.apply();
+  if (typeof initCopyButtons === 'function') initCopyButtons();
+  document.getElementById('theme-toggle')?.addEventListener('click', () => Theme?.toggle());
+});
+</script>
+</body>
+</html>

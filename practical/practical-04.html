@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Praktikum 04 – Membangun CNN dengan PyTorch | COM</title>
+  <link rel="icon" type="image/png" href="../assets/img/logo-TKOM.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css"/>
+</head>
+<body>
+<header class="site-header">
+  <button class="sidebar-toggle" id="sidebar-toggle">&#9776;</button>
+  <a href="../index.html" class="header-brand">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo" class="header-logo" onerror="this.style.display=\'none\'"/>
+    <span class="header-title">COM</span><span class="header-sub">Computer Vision</span>
+  </a>
+  <div class="header-search"><input type="search" id="search-input" placeholder="Cari materi..." autocomplete="off"/><div id="search-results" class="search-dropdown" hidden></div></div>
+  <nav class="header-actions"><button id="theme-toggle" class="btn-icon">&#127769;</button></nav>
+</header>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="../assets/img/logo-TKOM.png" alt="Logo" class="sidebar-logo" onerror="this.style.display=\'none\'"/>
+    <div class="sidebar-brand-text"><strong>COM</strong><small>Computer Vision</small></div>
+  </div>
+  <nav id="sidebar-nav" class="sidebar-nav"></nav>
+  <div class="sidebar-footer"><a href="../about.html">Tentang</a> &middot; <a href="../references.html">Referensi</a></div>
+</aside>
+<main class="main-content" id="main-content">
+  <nav class="breadcrumb">
+    <a href="../index.html">&#127968; Beranda</a><span class="breadcrumb-sep">&rsaquo;</span>
+    <a href="../materials/material-04.html">Materi 04</a><span class="breadcrumb-sep">&rsaquo;</span>
+    <span>Praktikum 04</span>
+  </nav>
+  <div class="article-header">
+    <div class="article-header__meta">
+      <span class="badge badge-purple">&#128187; Praktikum</span>
+      <span class="badge badge-blue">Sesi 04</span>
+      <span class="badge" data-progress-week="week04">0%</span>
+    </div>
+    <h1 class="article-title">Praktikum 04: Membangun CNN dengan PyTorch</h1>
+    <p class="article-desc">Implementasi CNN dari nol dengan PyTorch, latih pada dataset CIFAR-10, dan analisis feature maps.</p>
+    <div class="article-actions">
+      <a href="https://colab.research.google.com" target="_blank" rel="noopener" class="btn-primary">
+        &#9654; Buka di Google Colab
+      </a>
+      <button class="btn-outline" onclick="markPracticeComplete(\'week04\')">&#9989; Tandai Selesai</button>
+    </div>
+  </div>
+  <section class="content-section">
+    <h2>Step 1: CNN sederhana</h2>
+    <div class="code-block">
+      <div class="code-block__header"><span class="code-lang">Python</span><button class="copy-btn">Copy</button></div>
+      <pre><code class="language-python">import torch
+import torch.nn as nn
+import torch.optim as optim
+from torchvision import datasets, transforms
+from torch.utils.data import DataLoader
+
+# Dataset CIFAR-10
+transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+])
+trainset = datasets.CIFAR10(root="./data", train=True,  download=True, transform=transform)
+testset  = datasets.CIFAR10(root="./data", train=False, download=True, transform=transform)
+trainloader = DataLoader(trainset, batch_size=64, shuffle=True,  num_workers=2)
+testloader  = DataLoader(testset,  batch_size=64, shuffle=False, num_workers=2)
+
+classes = ["airplane","automobile","bird","cat","deer","dog","frog","horse","ship","truck"]
+print(f"Training: {len(trainset)} | Test: {len(testset)}")
+
+# Arsitektur CNN
+class MyCNN(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.features = nn.Sequential(
+            nn.Conv2d(3, 32, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2,2),
+            nn.Conv2d(32, 64, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2,2),
+        )
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(64*8*8, 256), nn.ReLU(), nn.Dropout(0.5),
+            nn.Linear(256, 10)
+        )
+    def forward(self, x): return self.classifier(self.features(x))
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model  = MyCNN().to(device)
+print(f"Device: {device}")
+print(f"Parameters: {sum(p.numel() for p in model.parameters()):,}")</code></pre>
+    </div>
+  </section>
+  <section class="content-section">
+    <h2>Step 2: Training Loop</h2>
+    <div class="code-block">
+      <div class="code-block__header"><span class="code-lang">Python</span><button class="copy-btn">Copy</button></div>
+      <pre><code class="language-python"># Lanjutan dari cell sebelumnya
+import matplotlib.pyplot as plt
+
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=1e-3)
+scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.5)
+
+def train_epoch(model, loader, criterion, optimizer):
+    model.train(); total_loss = correct = total = 0
+    for X, y in loader:
+        X, y = X.to(device), y.to(device)
+        optimizer.zero_grad()
+        out = model(X); loss = criterion(out, y)
+        loss.backward(); optimizer.step()
+        total_loss += loss.item(); pred = out.argmax(1)
+        correct += pred.eq(y).sum().item(); total += y.size(0)
+    return total_loss/len(loader), correct/total
+
+def eval_epoch(model, loader, criterion):
+    model.eval(); total_loss = correct = total = 0
+    with torch.no_grad():
+        for X, y in loader:
+            X, y = X.to(device), y.to(device)
+            out = model(X); loss = criterion(out, y)
+            total_loss += loss.item(); pred = out.argmax(1)
+            correct += pred.eq(y).sum().item(); total += y.size(0)
+    return total_loss/len(loader), correct/total
+
+EPOCHS = 10; train_accs = []; val_accs = []
+for epoch in range(1, EPOCHS+1):
+    tr_loss, tr_acc = train_epoch(model, trainloader, criterion, optimizer)
+    va_loss, va_acc = eval_epoch(model, testloader, criterion)
+    scheduler.step()
+    train_accs.append(tr_acc); val_accs.append(va_acc)
+    print(f"Epoch {epoch:2d} | Train: {tr_loss:.4f} ({tr_acc:.1%}) | Val: {va_loss:.4f} ({va_acc:.1%})")
+
+plt.plot(train_accs, label="Train"); plt.plot(val_accs, label="Val")
+plt.xlabel("Epoch"); plt.ylabel("Accuracy"); plt.legend(); plt.title("Training Curve"); plt.show()</code></pre>
+    </div>
+  </section>
+
+  <div class="material-nav">
+    <a href="../materials/material-04.html" class="btn-outline">&larr; Kembali ke Materi 04</a>
+    <button class="btn-primary" onclick="markPracticeComplete(\'week04\')">&#9989; Tandai Praktikum Selesai</button>
+    <a href="practical-05.html" class="btn-outline">Praktikum 05 &rarr;</a>
+  </div>
+</main>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="../assets/img/logo-TKOM.png" alt="Logo" class="footer-logo" onerror="this.style.display=\'none\'"/>
+      <div><strong>COM &ndash; Computer Vision Learning Platform</strong><small>Universitas Warmadewa</small></div>
+    </div>
+    <nav class="footer-links"><a href="../index.html">Beranda</a><a href="../about.html">Tentang</a></nav>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="../assets/js/course-config.js"></script>
+<script src="../assets/js/progress.js"></script>
+<script src="../assets/js/main.js"></script>
+<script>
+function markPracticeComplete(week) {
+  if (typeof Progress !== \'undefined\') {
+    Progress.mark(week, \'practice\');
+    document.querySelectorAll(\'button[onclick*="markPracticeComplete"]\').forEach(b => {
+      b.textContent = \'\u2705 Selesai!\'; b.disabled = true;
+    });
+  }
+}
+document.addEventListener(\'DOMContentLoaded\', () => {
+  if (typeof buildSidebar === \'function\') buildSidebar(\'week04\');
+  if (typeof initSearch === \'function\') initSearch();
+  if (typeof initMobileSidebar === \'function\') initMobileSidebar();
+  if (typeof Theme !== \'undefined\') Theme.apply();
+  if (typeof initCopyButtons === \'function\') initCopyButtons();
+  document.getElementById(\'theme-toggle\')?.addEventListener(\'click\', () => Theme?.toggle());
+});
+</script>
+</body>
+</html>
